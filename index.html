@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ターゲットハンター</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+      background:
+        radial-gradient(circle at top, #1f2a44 0%, #0d1321 45%, #06090f 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 40px;
+      letter-spacing: 2px;
+      color: #ffd166;
+      text-shadow: 0 0 12px rgba(255, 209, 102, 0.35);
+    }
+
+    .title p {
+      margin: 8px 0 0;
+      color: #cbd5e1;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+    }
+
+    .top-panel {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .instructions {
+      padding: 20px;
+    }
+
+    .instructions h2,
+    .ranking-panel h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 22px;
+      color: #ffe08a;
+    }
+
+    .instructions ul {
+      margin: 0;
+      padding-left: 20px;
+      line-height: 1.8;
+      color: #e5edf8;
+    }
+
+    .instructions .note {
+      margin-top: 12px;
+      color: #9fb3c8;
+      font-size: 14px;
+    }
+
+    .ranking-panel {
+      padding: 20px;
+    }
+
+    .ranking-panel ol {
+      margin: 0;
+      padding-left: 24px;
+      line-height: 1.9;
+      color: #f8fbff;
+    }
+
+    .game-panel {
+      padding: 18px;
+    }
+
+    .hud {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .hud-left {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 10px 14px;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #9fb3c8;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      cursor: default;
+      opacity: 0.6;
+      transform: none;
+    }
+
+    #startBtn {
+      background: linear-gradient(135deg, #06d6a0, #00b894);
+      color: #04130f;
+    }
+
+    #howToBtn {
+      background: linear-gradient(135deg, #ffd166, #ffb703);
+      color: #201400;
+    }
+
+    #gameArea {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 2px solid rgba(255,255,255,0.12);
+      background:
+        linear-gradient(to bottom, rgba(66, 135, 245, 0.22), rgba(9, 18, 36, 0.25)),
+        radial-gradient(circle at 50% 120%, #1e90ff 0%, #0b1730 55%, #07101f 100%);
+      box-shadow: inset 0 0 40px rgba(255,255,255,0.04);
+      cursor: crosshair;
+    }
+
+    .target {
+      position: absolute;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      cursor: pointer;
+      background:
+        radial-gradient(circle at 30% 30%, #ffef9a 0 18%, #ff6b6b 19% 38%, #d90429 39% 58%, #7b0202 59% 100%);
+      border: 3px solid rgba(255,255,255,0.75);
+      box-shadow:
+        0 0 18px rgba(255, 80, 80, 0.55),
+        inset 0 0 10px rgba(255,255,255,0.25);
+      animation: popIn 0.12s ease-out;
+    }
+
+    .target::after {
+      content: "✦";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      color: rgba(255,255,255,0.85);
+      text-shadow: 0 0 8px rgba(255,255,255,0.5);
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0.6);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .floating-text {
+      position: absolute;
+      font-weight: 800;
+      pointer-events: none;
+      animation: floatUp 0.8s ease-out forwards;
+      text-shadow: 0 0 12px rgba(0,0,0,0.45);
+    }
+
+    .plus {
+      color: #8effa0;
+    }
+
+    .minus {
+      color: #ff9a9a;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-28px);
+      }
+    }
+
+    #message {
+      margin-top: 14px;
+      min-height: 28px;
+      font-weight: 700;
+      color: #d9f0ff;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 16, 0.76);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 20;
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    .overlay-card {
+      width: min(720px, 100%);
+      padding: 26px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(31,42,68,0.98), rgba(13,19,33,0.98));
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 18px 48px rgba(0,0,0,0.45);
+    }
+
+    .overlay-card h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      color: #ffd166;
+      font-size: 28px;
+    }
+
+    .overlay-card p,
+    .overlay-card li {
+      color: #e5edf8;
+      line-height: 1.8;
+    }
+
+    .overlay-card ul {
+      padding-left: 22px;
+    }
+
+    .overlay-actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .overlay-actions button {
+      min-width: 130px;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, #06d6a0, #00b894);
+      color: #04130f;
+    }
+
+    .secondary-btn {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    @media (max-width: 860px) {
+      .top-panel {
+        grid-template-columns: 1fr;
+      }
+
+      #gameArea {
+        height: 420px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">
+      <h1>TARGET HUNTER</h1>
+      <p>出現するターゲットを素早く撃ち抜いて、ハイスコアを狙うミニゲーム</p>
+    </div>
+
+    <div class="top-panel">
+      <div class="instructions card">
+        <h2>遊び方</h2>
+        <ul>
+          <li>START を押すと 15 秒間ゲームが始まります。</li>
+          <li>赤いターゲットをクリックすると <strong>+10点</strong> です。</li>
+          <li>ターゲット以外の場所をクリックすると <strong>-5点</strong> です。</li>
+          <li>制限時間終了後、名前を入力するとスコアが保存されます。</li>
+          <li>ランキング上位を目指してください。</li>
+        </ul>
+        <div class="note">最初に説明を閉じた後でも、「説明」ボタンで再表示できます。</div>
+      </div>
+
+      <div class="ranking-panel card">
+        <h2>ランキング TOP 10</h2>
+        <ol id="rankingList"></ol>
+      </div>
+    </div>
+
+    <div class="game-panel card">
+      <div class="hud">
+        <div class="hud-left">
+          <div class="stat">
+            <div class="stat-label">SCORE</div>
+            <div class="stat-value" id="score">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">TIME</div>
+            <div class="stat-value"><span id="time">15</span>s</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">HIT</div>
+            <div class="stat-value" id="hitCount">0</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="howToBtn">説明</button>
+          <button id="startBtn">START</button>
+        </div>
+      </div>
+
+      <div id="gameArea"></div>
+      <div id="message"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="introOverlay">
+    <div class="overlay-card">
+      <h2>ゲーム説明</h2>
+      <p>
+        ターゲットがフィールド内に次々出現します。<br>
+        制限時間内にできるだけ多くクリックして、高得点を狙ってください。
+      </p>
+      <ul>
+        <li>ターゲット命中で <strong>+10点</strong></li>
+        <li>何もない場所をクリックすると <strong>-5点</strong></li>
+        <li>ゲーム終了後に名前を入力してランキング登録</li>
+      </ul>
+      <div class="overlay-actions">
+        <button class="secondary-btn" id="closeIntroBtn">閉じる</button>
+        <button class="primary-btn" id="startFromIntroBtn">STARTする</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabaseUrl = 'https://bjiorammppfnofwassnw.supabase.co';
+    const supabaseKey = 'sb_publishable_zeO44Wez1JA3qaM9Ufh71g__a_vRDnn';
+    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    const gameArea = document.getElementById('gameArea');
+    const scoreEl = document.getElementById('score');
+    const timeEl = document.getElementById('time');
+    const hitCountEl = document.getElementById('hitCount');
+    const messageEl = document.getElementById('message');
+    const rankingListEl = document.getElementById('rankingList');
+    const startBtn = document.getElementById('startBtn');
+    const howToBtn = document.getElementById('howToBtn');
+    const introOverlay = document.getElementById('introOverlay');
+    const closeIntroBtn = document.getElementById('closeIntroBtn');
+    const startFromIntroBtn = document.getElementById('startFromIntroBtn');
+
+    let score = 0;
+    let timeLeft = 15;
+    let hitCount = 0;
+    let gameTimer = null;
+    let spawnTimer = null;
+    let isPlaying = false;
+
+    function updateHud() {
+      scoreEl.textContent = score;
+      timeEl.textContent = timeLeft;
+      hitCountEl.textContent = hitCount;
+    }
+
+    function clearTargets() {
+      document.querySelectorAll('.target').forEach(el => el.remove());
+    }
+
+    function showFloatingText(text, x, y, className) {
+      const el = document.createElement('div');
+      el.className = `floating-text ${className}`;
+      el.textContent = text;
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      gameArea.appendChild(el);
+
+      setTimeout(() => el.remove(), 800);
+    }
+
+    function createTarget() {
+      if (!isPlaying) return;
+
+      const target = document.createElement('div');
+      target.className = 'target';
+
+      const size = 64;
+      const maxX = gameArea.clientWidth - size;
+      const maxY = gameArea.clientHeight - size;
+
+      const x = Math.floor(Math.random() * maxX);
+      const y = Math.floor(Math.random() * maxY);
+
+      target.style.left = x + 'px';
+      target.style.top = y + 'px';
+
+      target.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!isPlaying) return;
+
+        score += 10;
+        hitCount += 1;
+        updateHud();
+
+        showFloatingText('+10', x + 16, y, 'plus');
+        target.remove();
+      });
+
+      gameArea.appendChild(target);
+
+      setTimeout(() => {
+        if (target.parentNode) target.remove();
+      }, 850);
+    }
+
+    function startGame() {
+      if (isPlaying) return;
+
+      introOverlay.classList.add('hidden');
+
+      score = 0;
+      timeLeft = 15;
+      hitCount = 0;
+      isPlaying = true;
+      updateHud();
+      clearTargets();
+
+      messageEl.textContent = 'ゲーム開始！ ターゲットを狙ってください。';
+      startBtn.disabled = true;
+
+      spawnTimer = setInterval(() => {
+        createTarget();
+      }, 420);
+
+      gameTimer = setInterval(async () => {
+        timeLeft -= 1;
+        updateHud();
+
+        if (timeLeft <= 0) {
+          await endGame();
+        }
+      }, 1000);
+    }
+
+    async function endGame() {
+      if (!isPlaying) return;
+
+      isPlaying = false;
+      clearInterval(gameTimer);
+      clearInterval(spawnTimer);
+      clearTargets();
+      startBtn.disabled = false;
+
+      messageEl.textContent = `ゲーム終了！ 最終スコア: ${score}`;
+
+      const playerName = prompt('名前を入力してください', 'player1') || 'no_name';
+      const saved = await saveScore(playerName, score, `hits:${hitCount}`);
+
+      if (saved) {
+        messageEl.textContent = `ゲーム終了！ ${playerName} さんのスコア ${score} を保存しました。`;
+        await loadRanking();
+      } else {
+        messageEl.textContent = `ゲーム終了！ スコア ${score}（保存失敗）`;
+      }
+    }
+
+    async function saveScore(playerName, finalScore, logText = '') {
+      const { error } = await supabaseClient
+        .from('game_scores')
+        .insert([
+          {
+            player_name: playerName,
+            score: finalScore,
+            log_text: logText
+          }
+        ]);
+
+      if (error) {
+        console.error('保存失敗:', error);
+        alert('スコア保存に失敗しました');
+        return false;
+      }
+
+      return true;
+    }
+
+    async function loadRanking() {
+      const { data, error } = await supabaseClient
+        .from('game_scores')
+        .select('*')
+        .order('score', { ascending: false })
+        .order('created_at', { ascending: true })
+        .limit(10);
+
+      if (error) {
+        console.error('ランキング取得失敗:', error);
+        return;
+      }
+
+      rankingListEl.innerHTML = '';
+
+      data.forEach((row, index) => {
+        const li = document.createElement('li');
+        const rank = index + 1;
+        let icon = '';
+
+        if (rank === 1) icon = '🥇 ';
+        else if (rank === 2) icon = '🥈 ';
+        else if (rank === 3) icon = '🥉 ';
+
+        li.textContent = `${icon}${row.player_name} : ${row.score}`;
+        rankingListEl.appendChild(li);
+      });
+    }
+
+    gameArea.addEventListener('click', (e) => {
+      if (!isPlaying) return;
+      if (e.target !== gameArea) return;
+
+      score = Math.max(0, score - 5);
+      updateHud();
+
+      const rect = gameArea.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      showFloatingText('-5', x, y, 'minus');
+    });
+
+    startBtn.addEventListener('click', startGame);
+    howToBtn.addEventListener('click', () => {
+      introOverlay.classList.remove('hidden');
+    });
+    closeIntroBtn.addEventListener('click', () => {
+      introOverlay.classList.add('hidden');
+    });
+    startFromIntroBtn.addEventListener('click', startGame);
+
+    updateHud();
+    loadRanking();
+  </script>
+</body>
+</html>
