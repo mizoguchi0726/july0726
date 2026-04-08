@@ -9,7 +9,13 @@ const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
 
+// public フォルダ配信
 app.use(express.static(path.join(__dirname, "public")));
+
+// ルートで index.html を返す
+app.get("/", (_req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 const rooms = new Map();
 
@@ -54,7 +60,7 @@ wss.on("connection", (ws) => {
     let msg;
     try {
       msg = JSON.parse(raw.toString());
-    } catch (e) {
+    } catch (_e) {
       return;
     }
 
@@ -76,10 +82,14 @@ wss.on("connection", (ws) => {
         messages: room.messages.slice(-40),
       });
 
-      broadcast(roomId, {
-        type: "player_joined",
-        player: { ...player, lastSeen: Date.now() },
-      }, ws);
+      broadcast(
+        roomId,
+        {
+          type: "player_joined",
+          player: { ...player, lastSeen: Date.now() },
+        },
+        ws
+      );
 
       return;
     }
