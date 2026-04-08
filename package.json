@@ -1,8 +1,8 @@
 {
   "name": "networked-browser-mmo-demo",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
-  "description": "Minimal networked browser MMO demo with Node.js + WebSocket",
+  "description": "Improved networked browser MMO demo with shared map, better UI, and chat fixes",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

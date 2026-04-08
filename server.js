@@ -9,10 +9,7 @@ const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
 
-// public フォルダ配信
 app.use(express.static(path.join(__dirname, "public")));
-
-// ルートで index.html を返す
 app.get("/", (_req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
@@ -42,6 +39,12 @@ function broadcast(roomId, data, exceptWs = null) {
   for (const sock of room.sockets) {
     if (sock !== exceptWs) send(sock, data);
   }
+}
+
+function broadcastAll(roomId, data) {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  for (const sock of room.sockets) send(sock, data);
 }
 
 function cleanupRoom(roomId) {
@@ -82,14 +85,10 @@ wss.on("connection", (ws) => {
         messages: room.messages.slice(-40),
       });
 
-      broadcast(
-        roomId,
-        {
-          type: "player_joined",
-          player: { ...player, lastSeen: Date.now() },
-        },
-        ws
-      );
+      broadcast(roomId, {
+        type: "player_joined",
+        player: { ...player, lastSeen: Date.now() },
+      }, ws);
 
       return;
     }
@@ -106,15 +105,15 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "chat") {
       const message = {
-        id: msg.message?.id,
-        playerId: msg.message?.playerId,
-        playerName: msg.message?.playerName,
+        id: String(msg.message?.id || Date.now()),
+        playerId: String(msg.message?.playerId || ""),
+        playerName: String(msg.message?.playerName || "Player"),
         text: String(msg.message?.text || "").slice(0, 200),
         ts: Date.now(),
       };
       room.messages.push(message);
       room.messages = room.messages.slice(-80);
-      broadcast(ws.roomId, { type: "chat", message });
+      broadcastAll(ws.roomId, { type: "chat", message });
       return;
     }
   });

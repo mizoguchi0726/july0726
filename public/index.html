@@ -6,58 +6,79 @@
   <title>Networked Mini Browser MMO</title>
   <style>
     :root{
-      --bg:#eef4ff; --panel:#ffffff; --line:#d8e2f0; --text:#10233f; --muted:#5f738d;
-      --shadow:0 10px 30px rgba(16,35,63,.10);
+      --bg1:#dfeeff; --bg2:#f9fbff; --panel:rgba(255,255,255,.82); --line:#d8e3f2; --text:#10233f; --muted:#61758f;
+      --navy:#132d57; --blue:#3b82f6; --soft:#eef5ff; --shadow:0 18px 50px rgba(16,35,63,.10);
     }
     *{box-sizing:border-box}
-    body{margin:0;background:linear-gradient(180deg,#eef4ff 0%,#f8fbff 100%);color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-    .wrap{max-width:1440px;margin:0 auto;padding:24px}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left, #ffffff 0%, transparent 28%),
+        radial-gradient(circle at right, #d9ebff 0%, transparent 20%),
+        linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%);
+      overflow-x:hidden;
+    }
+    .wrap{max-width:1460px;margin:0 auto;padding:28px}
     .hero{margin-bottom:18px}
     .tag{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
-      background:#dbeafe;color:#1d4ed8;font-size:14px;font-weight:700}
-    h1{margin:12px 0 8px;font-size:34px;line-height:1.15}
+      background:#dbeafe;color:#1d4ed8;font-size:14px;font-weight:800;backdrop-filter: blur(10px)}
+    h1{margin:14px 0 8px;font-size:34px;line-height:1.1;letter-spacing:-.02em}
     p{margin:0;color:var(--muted);line-height:1.7}
-    .grid{display:grid;grid-template-columns:1.38fr .62fr;gap:24px}
-    .panel{background:var(--panel);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow)}
+    .grid{display:grid;grid-template-columns:1.42fr .58fr;gap:24px;align-items:start}
+    .panel{
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,.7);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(12px);
+    }
     .p24{padding:24px}.p18{padding:18px}
     .between{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:#eff6ff;font-size:14px}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;background:#eff6ff;font-size:14px;border:1px solid #dbeafe}
     .small{font-size:13px;color:var(--muted)}
-    .canvas-wrap{padding:12px;background:#edf5ff;border-radius:22px;border:1px solid var(--line)}
-    canvas{display:block;width:100%;max-width:940px;height:auto;margin:auto;border-radius:18px;background:#9ad169;image-rendering:pixelated}
-    .section-title{font-size:18px;font-weight:800;margin-bottom:14px}
+    .canvas-wrap{padding:12px;background:rgba(237,245,255,.75);border-radius:24px;border:1px solid var(--line)}
+    canvas{display:block;width:100%;max-width:960px;height:auto;margin:auto;border-radius:22px;background:#9ad169;image-rendering:pixelated}
+    .section-title{font-size:22px;font-weight:900;margin-bottom:14px;letter-spacing:-.02em}
     .field{margin-bottom:14px}
-    .field label{display:block;font-size:14px;font-weight:700;margin-bottom:8px}
+    .field label{display:block;font-size:14px;font-weight:800;margin-bottom:8px}
     .field-row{display:flex;gap:8px}
-    input,button{height:44px;border-radius:14px;font-size:14px}
-    input{flex:1;border:1px solid var(--line);padding:0 12px}
-    button{border:none;padding:0 16px;background:#10233f;color:white;cursor:pointer;font-weight:700}
-    button.secondary{background:#e2e8f0;color:#10233f}
-    .hint{background:#f8fbff;border:1px solid var(--line);border-radius:18px;padding:12px;font-size:13px;color:var(--muted);line-height:1.7}
-    .list{max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:8px}
-    .player{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:16px;background:white}
+    input,button{height:46px;border-radius:16px;font-size:14px}
+    input{flex:1;border:1px solid var(--line);padding:0 14px;background:rgba(255,255,255,.86);outline:none}
+    input:focus{border-color:#90b4f8;box-shadow:0 0 0 4px rgba(59,130,246,.08)}
+    button{border:none;padding:0 16px;background:var(--navy);color:white;cursor:pointer;font-weight:800;transition:.18s transform,.18s opacity}
+    button:hover{transform:translateY(-1px);opacity:.95}
+    button.secondary{background:#e8eef7;color:#10233f}
+    .hint{background:rgba(248,251,255,.92);border:1px solid var(--line);border-radius:20px;padding:12px 14px;font-size:13px;color:var(--muted);line-height:1.8}
+    .list{max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px}
+    .player{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.84)}
     .dot{width:12px;height:12px;border-radius:999px;display:inline-block}
-    .chat-log{height:270px;overflow:auto;border:1px solid var(--line);background:#f8fbff;border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:8px}
-    .msg{padding:10px 12px;border-radius:16px;font-size:14px}
-    .msg.self{background:#10233f;color:white}
-    .msg.other{background:white}
-    .msg.system{background:#e2e8f0;color:#516174}
-    .meta{font-size:11px;color:#90a0b7;margin-bottom:4px}
+    .chat-log{height:330px;overflow:auto;border:1px solid var(--line);background:rgba(248,251,255,.88);border-radius:22px;padding:12px;display:flex;flex-direction:column;gap:10px}
+    .msg{padding:12px 14px;border-radius:18px;font-size:14px;line-height:1.5;max-width:88%}
+    .msg.self{background:linear-gradient(180deg,#173764 0%, #10284d 100%);color:white;margin-left:auto;box-shadow:0 12px 20px rgba(16,40,77,.15)}
+    .msg.other{background:white;color:#10233f}
+    .msg.system{background:#eaf1fb;color:#5c6c82;max-width:100%}
+    .meta{font-size:11px;color:#99a7bb;margin-bottom:5px;font-weight:700}
+    .msg.self .meta{color:#b8c9e5}
     .legend{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .legend div{padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:#fff;font-size:13px;color:var(--muted)}
-    @media (max-width:1020px){.grid{grid-template-columns:1fr} h1{font-size:28px}}
+    .legend div{padding:11px 13px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.84);font-size:13px;color:var(--muted)}
+    .sidecol{display:flex;flex-direction:column;gap:24px}
+    .sticky{position:sticky;top:20px}
+    .kbd{display:inline-block;padding:2px 7px;border-radius:8px;background:#edf2ff;border:1px solid #dbe5ff;font-size:12px;font-weight:800;color:#33518a}
+    @media (max-width:1100px){.grid{grid-template-columns:1fr}.sticky{position:static} h1{font-size:28px}}
   </style>
 </head>
 <body>
 <div class="wrap">
   <div class="hero">
-    <span class="tag">ネット越し版 ミニMMO試作</span>
-    <h1>Node.js + WebSocket で、別端末から同じワールドに入れる版</h1>
+    <span class="tag">ネット越し版 ミニMMO試作 v3</span>
+    <h1>共有マップ化 + 見た目改善 + WASD推奨 + チャット重複修正版</h1>
     <p>
-      サーバーに接続して同じルームに入ると、別PCや別スマホからでも同じワールドで移動できます。
-      移動、チャット、簡単なマップ共有まで入っています。
+      全員で同じマップが見えるように固定seedで共有マップ化しました。
+      矢印キーのスクロール抑止、WASD推奨、チャット二重表示修正も入っています。
     </p>
   </div>
 
@@ -65,8 +86,8 @@
     <div class="panel p18">
       <div class="between" style="margin-bottom:12px">
         <div>
-          <div style="font-size:21px;font-weight:800">ワールド</div>
-          <div class="small">移動: WASD / 矢印キー　ダッシュ: Shift</div>
+          <div style="font-size:22px;font-weight:900">ワールド</div>
+          <div class="small">移動: <span class="kbd">WASD</span> / 矢印キー　ダッシュ: <span class="kbd">Shift</span></div>
         </div>
         <div class="row">
           <span class="pill" id="playersBadge">0 人</span>
@@ -75,11 +96,11 @@
         </div>
       </div>
       <div class="canvas-wrap">
-        <canvas id="game" width="940" height="560"></canvas>
+        <canvas id="game" width="960" height="560"></canvas>
       </div>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:24px">
+    <div class="sidecol sticky">
       <div class="panel p24">
         <div class="section-title">参加設定</div>
         <div class="field">
@@ -100,7 +121,8 @@
           <button class="secondary" id="resetBtn">位置リセット</button>
         </div>
         <div class="hint" style="margin-top:14px">
-          別PCや別スマホでも、同じURL・同じルーム名で接続すると同じワールドに入れます。
+          別PCや別スマホでも、同じURL・同じルーム名で接続すると同じワールドに入れます。<br>
+          同一ブラウザで試すなら、通常ウィンドウとシークレットで開くと確実です。
         </div>
       </div>
 
@@ -135,10 +157,11 @@
 
 <script>
 (() => {
-  const VIEW_W = 940, VIEW_H = 560;
+  const VIEW_W = 960, VIEW_H = 560;
   const WORLD_W = 2200, WORLD_H = 1400;
   const BASE_SPEED = 2.4;
   const DASH_SPEED = 4.1;
+  const MAP_SEED = 20260408;
   const COLORS = [
     {body:"#2563eb", cape:"#93c5fd"},
     {body:"#dc2626", cape:"#fca5a5"},
@@ -149,10 +172,23 @@
     {body:"#ca8a04", cape:"#fde68a"},
     {body:"#be185d", cape:"#f9a8d4"}
   ];
+
   const clamp = (n,min,max) => Math.max(min, Math.min(max,n));
-  const rand = n => Math.floor(Math.random()*n);
   const uid = () => Math.random().toString(36).slice(2,10);
   const dist = (a,b) => Math.hypot(a.x-b.x, a.y-b.y);
+
+  function createSeededRandom(seed) {
+    let s = seed >>> 0;
+    return function() {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      return s / 4294967296;
+    };
+  }
+
+  const mapRandom = createSeededRandom(MAP_SEED);
+  const playerRandom = createSeededRandom((Date.now() % 1000000) + Math.floor(Math.random() * 1000));
+  const randMap = n => Math.floor(mapRandom() * n);
+  const randPlayer = n => Math.floor(playerRandom() * n);
 
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
@@ -173,9 +209,8 @@
 
   let params = new URLSearchParams(location.search);
   let room = params.get('room') || 'meadow';
-  let name = localStorage.getItem('mmo_name') || `Player-${rand(999)}`;
-　const selfId = sessionStorage.getItem('mmo_self_id') || uid();
-　sessionStorage.setItem('mmo_self_id', selfId);
+  let name = localStorage.getItem('mmo_name') || `Player-${randPlayer(999)}`;
+  const selfId = uid();
   nameInput.value = name;
   roomInput.value = room;
 
@@ -185,17 +220,17 @@
   let socket = null;
   let lastPresence = 0;
 
-  const selfPalette = COLORS[rand(COLORS.length)];
+  const selfPalette = COLORS[randPlayer(COLORS.length)];
   const self = {
-    id:selfId, name, x:320 + rand(180), y:840 + rand(120),
+    id:selfId, name, x:320 + randPlayer(180), y:840 + randPlayer(120),
     body:selfPalette.body, cape:selfPalette.cape, dir:'down',
     step:0, lastSeen:Date.now()
   };
 
   const trees = [];
   const rocks = [];
-  for(let i=0;i<48;i++) trees.push({x:80+rand(WORLD_W-160), y:80+rand(WORLD_H-160), r:26+rand(10)});
-  for(let i=0;i<28;i++) rocks.push({x:120+rand(WORLD_W-240), y:120+rand(WORLD_H-240), r:15+rand(12)});
+  for(let i=0;i<48;i++) trees.push({x:80+randMap(WORLD_W-160), y:80+randMap(WORLD_H-160), r:26+randMap(10)});
+  for(let i=0;i<28;i++) rocks.push({x:120+randMap(WORLD_W-240), y:120+randMap(WORLD_H-240), r:15+randMap(12)});
   const lake = {x:1420,y:720,w:520,h:300};
   const hut = {x:260,y:260,w:180,h:150};
   const plaza = {x:180,y:720,w:420,h:220};
@@ -369,11 +404,16 @@
   function sendChat(){
     const text = chatInput.value.trim();
     if(!text) return;
-    const local = {id:uid(), room, playerId:selfId, playerName:name, text, ts:Date.now()};
-    messages.push(local);
-    messages = messages.slice(-90);
-    renderChat();
-    send({ type:'chat', message: local });
+    send({
+      type:'chat',
+      message: {
+        id: uid(),
+        room,
+        playerId: selfId,
+        playerName: name,
+        text
+      }
+    });
     chatInput.value = '';
   }
 
@@ -468,7 +508,7 @@
 
     ctx.fillStyle = 'rgba(16,35,63,.76)'; ctx.beginPath(); ctx.roundRect(14,14,212,74,16); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.font = 'bold 14px sans-serif'; ctx.fillText(`Room: ${room}`, 28, 40); ctx.fillText(`Players: ${Object.keys(players).length}`, 28, 62);
-    ctx.font = '12px sans-serif'; ctx.fillText('草原マップ / 小屋・広場・湖', 28, 80);
+    ctx.font = '12px sans-serif'; ctx.fillText('共有マップ / 小屋・広場・湖', 28, 80);
 
     if(dist(self, {x:sign.x, y:sign.y}) < 90){
       ctx.fillStyle = 'rgba(255,255,255,.95)'; ctx.beginPath(); ctx.roundRect(300, 18, 360, 44, 14); ctx.fill();
@@ -478,10 +518,14 @@
 
   function update(){
     let dx = 0, dy = 0;
-    if(keys['arrowup'] || keys['w']) dy -= 1;
-    if(keys['arrowdown'] || keys['s']) dy += 1;
-    if(keys['arrowleft'] || keys['a']) dx -= 1;
-    if(keys['arrowright'] || keys['d']) dx += 1;
+    if(keys['w']) dy -= 1;
+    if(keys['s']) dy += 1;
+    if(keys['a']) dx -= 1;
+    if(keys['d']) dx += 1;
+    if(keys['arrowup']) dy -= 1;
+    if(keys['arrowdown']) dy += 1;
+    if(keys['arrowleft']) dx -= 1;
+    if(keys['arrowright']) dx += 1;
 
     if(dx || dy){
       const speed = (keys['shift'] ? DASH_SPEED : BASE_SPEED);
@@ -516,15 +560,39 @@
   };
 
   resetBtn.onclick = () => {
-    self.x = 320 + rand(180);
-    self.y = 840 + rand(120);
+    self.x = 320 + randPlayer(180);
+    self.y = 840 + randPlayer(120);
     broadcastPresence(true);
   };
 
   sendBtn.onclick = sendChat;
-  chatInput.addEventListener('keydown', e => { if(e.key === 'Enter') sendChat(); });
-  window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
-  window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+  chatInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendChat();
+    }
+  });
+
+  window.addEventListener('keydown', e => {
+    const tag = document.activeElement?.tagName;
+    const typing = tag === 'INPUT' || tag === 'TEXTAREA';
+    const key = e.key.toLowerCase();
+
+    if (["arrowup","arrowdown","arrowleft","arrowright"," "].includes(key) && !typing) {
+      e.preventDefault();
+    }
+    if ((["w","a","s","d","shift"].includes(key) || key.startsWith("arrow")) && !typing) {
+      e.preventDefault();
+      keys[key] = true;
+    }
+  }, { passive: false });
+
+  window.addEventListener('keyup', e => {
+    const key = e.key.toLowerCase();
+    if (["w","a","s","d","shift","arrowup","arrowdown","arrowleft","arrowright"].includes(key)) {
+      keys[key] = false;
+    }
+  });
 
   setRoomUrl();
   connect();
