@@ -1,8 +1,8 @@
 {
   "name": "networked-browser-mmo-demo",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": true,
-  "description": "Improved networked browser MMO demo with shared map, better UI, and chat fixes",
+  "description": "Stylized networked browser MMO demo with overlay chat and shared world",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

@@ -1,4 +1,4 @@
-# Networked Browser MMO Demo v3
+# Velvet Night District v4
 
 ## 使い方
 
@@ -14,11 +14,10 @@ http://localhost:3000
 - Build Command: npm install
 - Start Command: npm start
 
-## 変更点
-- ルート配信修正
-- タブごとに別ID
-- チャット二重表示修正
+## 改善点
+- 共有マップ
 - WASD推奨
 - 矢印キーのスクロール抑止
-- UI改善
-- 固定seedによる共有マップ化
+- チャット二重表示修正
+- ゲーム画面内オーバーレイチャット
+- ダークで妖艶な世界観の見た目に刷新
