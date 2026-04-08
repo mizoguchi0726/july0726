@@ -174,8 +174,8 @@
   let params = new URLSearchParams(location.search);
   let room = params.get('room') || 'meadow';
   let name = localStorage.getItem('mmo_name') || `Player-${rand(999)}`;
-  const selfId = localStorage.getItem('mmo_self_id') || uid();
-  localStorage.setItem('mmo_self_id', selfId);
+　const selfId = sessionStorage.getItem('mmo_self_id') || uid();
+　sessionStorage.setItem('mmo_self_id', selfId);
   nameInput.value = name;
   roomInput.value = room;
 
