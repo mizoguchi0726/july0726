@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Velvet Night District 3D - V9 COMPLETE</title>
+<title>Velvet Night District 3D - V10 ROBLOX CAMERA</title>
 <style>
 :root{
   --panel:rgba(10,10,18,.72);
@@ -90,8 +90,8 @@ linear-gradient(180deg,#090812 0%,#05050a 100%);color:var(--text);font-family:In
   <div class="hud">
     <div class="brand">
       <small>Playable 3D heroine prototype</small>
-      <h1>Velvet Night District 3D - V9 COMPLETE</h1>
-      <p>クリックで視点を有効化し、<b>WASD + マウス</b>で遊べる完成版です。</p>
+      <h1>Velvet Night District 3D - V10 ROBLOX CAMERA</h1>
+      <p>クリックで視点を有効化し、<b>WASD + マウス</b>で遊べる版です。マウスホイールでカメラ距離も変更できます。</p>
     </div>
     <div class="statusCard">
       <div class="pill" id="playersBadge">0 人</div>
@@ -118,18 +118,18 @@ linear-gradient(180deg,#090812 0%,#05050a 100%);color:var(--text);font-family:In
       <div class="row"><input id="nameInput" maxlength="18" placeholder="表示名" /><button class="btn" id="applyName">反映</button></div>
       <div class="row"><input id="roomInput" maxlength="20" placeholder="ルーム名" /><button class="btn secondary" id="reconnectBtn">再接続</button></div>
       <div class="row"><button class="btn secondary" id="resetBtn">位置リセット</button></div>
-      <div class="hint">操作: <b>WASD</b> 移動 / <b>マウス</b> 視点 / <b>Shift</b> ダッシュ / <b>Esc</b> で視点解除</div>
+      <div class="hint">操作: <b>WASD</b> 移動 / <b>マウス</b> 視点 / <b>ホイール</b> ズーム / <b>Shift</b> ダッシュ / <b>Esc</b> で視点解除</div>
     </section>
     <section class="legend">
       <h3>この版のポイント</h3>
-      <div class="legendGrid"><div>🌃 3Dの夜街</div><div>💃 女の子体型の3Dキャラ</div><div>🖱️ マウス視点変更</div><div>💬 画面横チャット</div></div>
+      <div class="legendGrid"><div>🌃 3Dの夜街</div><div>💃 女の子体型の3Dキャラ</div><div>🖱️ マウス視点変更</div><div>🎡 ホイールズーム</div></div>
     </section>
   </div>
 
   <div class="center" id="overlayCenter">
     <div class="prompt">
       <h2>クリックしてスタート</h2>
-      <p>マウスで視点を回せます。WASDで移動、Shiftでダッシュ、Escで視点解除。</p>
+      <p>マウスで視点を回せます。WASDで移動、ホイールでズーム、Shiftでダッシュ、Escで視点解除。</p>
       <button class="btn" id="startBtn">視点を有効にする</button>
     </div>
   </div>
@@ -143,7 +143,7 @@ import { PointerLockControls } from "https://cdn.jsdelivr.net/npm/three@0.162.0/
 
 const debugBox=document.getElementById("debugBox");
 const debug=(...a)=>{debugBox.textContent=a.join(" | "); console.log(...a);};
-debug("imports ok");
+debug("imports ok", "v10");
 
 const WORLD_W=140, WORLD_H=100;
 const COLORS=[{body:0xff72b1,accent:0xffd0e1},{body:0x8f6bff,accent:0xd9c9ff},{body:0x67b7ff,accent:0xcde7ff},{body:0xffb84d,accent:0xffe4b3},{body:0x4fe0b8,accent:0xc2fff0},{body:0xff6e7f,accent:0xffc2cb}];
@@ -183,6 +183,10 @@ scene.add(controls.getObject());
 controls.addEventListener("lock", ()=>{overlayCenter.classList.add("hidden"); debug("pointer locked");});
 controls.addEventListener("unlock", ()=>{overlayCenter.classList.remove("hidden"); debug("pointer unlocked");});
 startBtn.addEventListener("click", ()=>{debug("start clicked"); controls.lock();});
+window.addEventListener("wheel", (e) => {
+  cameraDistance = clamp(cameraDistance + (e.deltaY > 0 ? 0.8 : -0.8), cameraDistanceMin, cameraDistanceMax);
+  debug("zoom", cameraDistance.toFixed(1));
+}, { passive: true });
 
 scene.add(new THREE.HemisphereLight(0xffd3eb,0x1b1020,1.2));
 const dir=new THREE.DirectionalLight(0xfff0c7,1.5);dir.position.set(10,18,6);scene.add(dir);
@@ -309,6 +313,10 @@ function sendChat(){const text=chatInput.value.trim();if(!text)return;send({type
 
 const selfPalette=COLORS[randPlayer(COLORS.length)];
 const self={x:-28+randPlayer(8),z:14+randPlayer(8),walk:0,facing:0,palette:selfPalette,colorCss:colorHexToCss(selfPalette.body)};
+let cameraDistance = 6.5;
+let cameraHeight = 4.2;
+const cameraDistanceMin = 2.2;
+const cameraDistanceMax = 12.0;
 
 applyNameBtn.onclick=()=>{const v=nameInput.value.trim().slice(0,18);if(v){name=v;localStorage.setItem("mmo_name",v);broadcastPresence(true);renderPlayers();}};
 reconnectBtn.onclick=()=>{room=roomInput.value.trim().replace(/\s+/g,"-").slice(0,20)||"velvet-district-3d";setRoomUrl();connect();};
@@ -361,15 +369,20 @@ function tick(){
   const selfAvatar=avatars.get(selfId);
   if(selfAvatar){
     const obj=controls.getObject();
-    if(controls.isLocked){
-      obj.position.x=selfAvatar.position.x;
-      obj.position.z=selfAvatar.position.z;
-      obj.position.y += (4.2-obj.position.y)*0.18;
+    const target = new THREE.Vector3(selfAvatar.position.x, 2.6, selfAvatar.position.z);
+    const forwardDir = new THREE.Vector3();
+    camera.getWorldDirection(forwardDir);
+    forwardDir.y = 0;
+    if(forwardDir.lengthSq() < 0.0001){
+      forwardDir.set(0, 0, 1);
     } else {
-      const behind=new THREE.Vector3(Math.sin(self.facing+Math.PI)*7,4.6,Math.cos(self.facing+Math.PI)*7);
-      const target=new THREE.Vector3(selfAvatar.position.x,0,selfAvatar.position.z).add(behind);
-      obj.position.lerp(target, .10);
-      camera.lookAt(new THREE.Vector3(selfAvatar.position.x,2.8,selfAvatar.position.z));
+      forwardDir.normalize();
+    }
+    const desired = target.clone().add(forwardDir.clone().multiplyScalar(-cameraDistance));
+    desired.y = target.y + cameraHeight;
+    obj.position.lerp(desired, controls.isLocked ? 0.22 : 0.10);
+    if(!controls.isLocked){
+      camera.lookAt(target);
     }
   }
 
