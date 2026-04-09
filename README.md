@@ -1,4 +1,4 @@
-# Velvet Night District 3D - V10 ROBLOX CAMERA
+# Velvet Night District 3D - V11 ANIME FIX
 
 npm install
 npm start
@@ -8,7 +8,9 @@ Render:
 - Start Command: npm start
 
 変更点:
-- マウスホイールでズーム
-- 三人称カメラを改善
-- Robloxっぽく引き/寄りできる
-- タイトルに V10 ROBLOX CAMERA と表示される
+- 名前を sessionStorage 管理に変更（同一ブラウザ別タブでも被りにくい）
+- 名前変更を安定化
+- チャット入力時は視点ロック解除
+- Tキー / Enter でチャット入力へ移動
+- キャラをアニメ調のかわいい寄りに調整
+- タイトルに V11 ANIME FIX と表示される

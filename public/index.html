@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Velvet Night District 3D - V10 ROBLOX CAMERA</title>
+<title>Velvet Night District 3D - V11 ANIME FIX</title>
 <style>
 :root{
   --panel:rgba(10,10,18,.72);
@@ -90,7 +90,7 @@ linear-gradient(180deg,#090812 0%,#05050a 100%);color:var(--text);font-family:In
   <div class="hud">
     <div class="brand">
       <small>Playable 3D heroine prototype</small>
-      <h1>Velvet Night District 3D - V10 ROBLOX CAMERA</h1>
+      <h1>Velvet Night District 3D - V11 ANIME FIX</h1>
       <p>クリックで視点を有効化し、<b>WASD + マウス</b>で遊べる版です。マウスホイールでカメラ距離も変更できます。</p>
     </div>
     <div class="statusCard">
@@ -129,7 +129,7 @@ linear-gradient(180deg,#090812 0%,#05050a 100%);color:var(--text);font-family:In
   <div class="center" id="overlayCenter">
     <div class="prompt">
       <h2>クリックしてスタート</h2>
-      <p>マウスで視点を回せます。WASDで移動、ホイールでズーム、Shiftでダッシュ、Escで視点解除。</p>
+      <p>マウスで視点を回せます。WASDで移動、ホイールでズーム、Shiftでダッシュ、Escで視点解除 / Tでチャット。</p>
       <button class="btn" id="startBtn">視点を有効にする</button>
     </div>
   </div>
@@ -143,7 +143,7 @@ import { PointerLockControls } from "https://cdn.jsdelivr.net/npm/three@0.162.0/
 
 const debugBox=document.getElementById("debugBox");
 const debug=(...a)=>{debugBox.textContent=a.join(" | "); console.log(...a);};
-debug("imports ok", "v10");
+debug("imports ok", "v11");
 
 const WORLD_W=140, WORLD_H=100;
 const COLORS=[{body:0xff72b1,accent:0xffd0e1},{body:0x8f6bff,accent:0xd9c9ff},{body:0x67b7ff,accent:0xcde7ff},{body:0xffb84d,accent:0xffe4b3},{body:0x4fe0b8,accent:0xc2fff0},{body:0xff6e7f,accent:0xffc2cb}];
@@ -157,7 +157,7 @@ const $=(id)=>document.getElementById(id);
 const chatLog=$("chatLog"), chatInput=$("chatInput"), sendBtn=$("sendBtn"), nameInput=$("nameInput"), roomInput=$("roomInput"), applyNameBtn=$("applyName"), reconnectBtn=$("reconnectBtn"), resetBtn=$("resetBtn"), playerList=$("playerList"), presenceText=$("presenceText"), playersBadge=$("playersBadge"), roomBadge=$("roomBadge"), statusBadge=$("statusBadge"), overlayCenter=$("overlayCenter"), startBtn=$("startBtn");
 
 let params=new URLSearchParams(location.search), room=params.get("room")||"velvet-district-3d";
-let name=localStorage.getItem("mmo_name")||`Player-${randPlayer(999)}`;
+let name=sessionStorage.getItem("mmo_name")||`Player-${100+randPlayer(900)}`;
 const selfId=uid();
 nameInput.value=name; roomInput.value=room;
 let socket=null, players={}, messages=[], keys={}, lastPresence=0;
@@ -238,35 +238,169 @@ function lamp(x,z,color){
 }
 for(let i=0;i<12;i++) lamp(-42+i*8,-4,i%2?0xff6bb0:0x8f6bff);
 
+
 function createGirlAvatar(colors){
   const g=new THREE.Group();
-  const skin=new THREE.MeshStandardMaterial({color:0xffd9c3,roughness:.7});
-  const body=new THREE.MeshStandardMaterial({color:colors.body,roughness:.55});
-  const accent=new THREE.MeshStandardMaterial({color:colors.accent,roughness:.5});
-  const hair=new THREE.MeshStandardMaterial({color:0x1a0f1c,roughness:.92});
-  const boot=new THREE.MeshStandardMaterial({color:0x181019,roughness:.95});
-  const hips=new THREE.Mesh(new THREE.CapsuleGeometry(.52,.9,6,12),body);hips.position.y=2.35;hips.scale.set(1.1,1,.92);g.add(hips);
-  const waist=new THREE.Mesh(new THREE.CapsuleGeometry(.38,.55,6,12),body);waist.position.y=3.0;waist.scale.set(.9,1,.75);g.add(waist);
-  const chest=new THREE.Mesh(new THREE.CapsuleGeometry(.46,.85,6,12),accent);chest.position.y=3.75;chest.scale.set(1.08,1,.86);g.add(chest);
-  const neck=new THREE.Mesh(new THREE.CylinderGeometry(.14,.16,.28,10),skin);neck.position.y=4.45;g.add(neck);
-  const head=new THREE.Mesh(new THREE.SphereGeometry(.5,24,24),skin);head.position.y=5.05;head.scale.set(.95,1.08,.95);g.add(head);
-  const hairBack=new THREE.Mesh(new THREE.SphereGeometry(.54,24,24),hair);hairBack.position.set(0,5.02,-.09);hairBack.scale.set(1.02,1.18,.95);g.add(hairBack);
-  const hairFront=new THREE.Mesh(new THREE.BoxGeometry(.92,.38,.2),hair);hairFront.position.set(0,5.18,.36);g.add(hairFront);
-  const ponyL=new THREE.Mesh(new THREE.CylinderGeometry(.06,.12,1.1,8),hair);ponyL.position.set(-.34,4.7,-.36);ponyL.rotation.z=-.4;g.add(ponyL);
-  const ponyR=ponyL.clone();ponyR.position.x=.34;ponyR.rotation.z=.4;g.add(ponyR);
-  const shoulderL=new THREE.Mesh(new THREE.SphereGeometry(.18,16,16),accent);shoulderL.position.set(-.55,4.02,0);g.add(shoulderL);
-  const shoulderR=shoulderL.clone();shoulderR.position.x=.55;g.add(shoulderR);
-  const armL=new THREE.Mesh(new THREE.CapsuleGeometry(.12,1.2,4,10),skin);armL.position.set(-.78,3.25,0);armL.rotation.z=.08;g.add(armL);
-  const armR=armL.clone();armR.position.x=.78;armR.rotation.z=-.08;g.add(armR);
-  const thighL=new THREE.Mesh(new THREE.CapsuleGeometry(.16,1.2,5,10),skin);thighL.position.set(-.23,1.35,0);thighL.scale.set(.95,1.15,.95);g.add(thighL);
-  const thighR=thighL.clone();thighR.position.x=.23;g.add(thighR);
-  const calfL=new THREE.Mesh(new THREE.CapsuleGeometry(.13,1.1,5,10),boot);calfL.position.set(-.23,.35,0);calfL.scale.set(.9,1.1,.9);g.add(calfL);
-  const calfR=calfL.clone();calfR.position.x=.23;g.add(calfR);
-  const heelL=new THREE.Mesh(new THREE.BoxGeometry(.22,.16,.55),boot);heelL.position.set(-.23,-.42,.12);g.add(heelL);
-  const heelR=heelL.clone();heelR.position.x=.23;g.add(heelR);
-  const cape=new THREE.Mesh(new THREE.ConeGeometry(.78,1.4,16,1,true),new THREE.MeshStandardMaterial({color:colors.accent,transparent:true,opacity:.9,side:THREE.DoubleSide}));
-  cape.position.set(0,3.05,-.46);cape.rotation.x=Math.PI;cape.scale.set(.8,.95,.6);g.add(cape);
-  g.userData={armL,armR,thighL,thighR,calfL,calfR,cape};
+
+  const skin=new THREE.MeshStandardMaterial({color:0xffdccd,roughness:.7});
+  const dress=new THREE.MeshStandardMaterial({color:colors.body,roughness:.45,metalness:.04});
+  const trim=new THREE.MeshStandardMaterial({color:colors.accent,roughness:.35,metalness:.05});
+  const hair=new THREE.MeshStandardMaterial({color:0x24122f,roughness:.8});
+  const shoe=new THREE.MeshStandardMaterial({color:0x17111d,roughness:.92});
+  const eyeWhite=new THREE.MeshStandardMaterial({color:0xfaf8ff,roughness:.25});
+  const eyeIris=new THREE.MeshStandardMaterial({color:0x9f67ff,emissive:0x3c1f55,emissiveIntensity:.25,roughness:.2});
+  const blush=new THREE.MeshStandardMaterial({color:0xffa7bf,transparent:true,opacity:.85});
+
+  const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.42,1.25,6,12),dress);
+  torso.position.y=3.15;
+  torso.scale.set(.88,1.0,.72);
+  g.add(torso);
+
+  const chest=new THREE.Mesh(new THREE.SphereGeometry(.48,18,18),trim);
+  chest.position.set(0,3.65,.08);
+  chest.scale.set(1.05,.78,.62);
+  g.add(chest);
+
+  const collar=new THREE.Mesh(new THREE.TorusGeometry(.28,.05,10,24),trim);
+  collar.rotation.x=Math.PI/2;
+  collar.position.set(0,4.08,.06);
+  g.add(collar);
+
+  const skirt=new THREE.Mesh(new THREE.CylinderGeometry(.22,.86,.92,8,1,true),dress);
+  skirt.position.y=2.24;
+  skirt.scale.set(1.0,1.0,.86);
+  g.add(skirt);
+
+  const underskirt=new THREE.Mesh(new THREE.CylinderGeometry(.2,.78,.26,8,1,true),trim);
+  underskirt.position.y=1.86;
+  underskirt.scale.set(1.0,1.0,.82);
+  g.add(underskirt);
+
+  const neck=new THREE.Mesh(new THREE.CylinderGeometry(.13,.15,.22,12),skin);
+  neck.position.y=4.35;
+  g.add(neck);
+
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.66,24,24),skin);
+  head.position.y=5.15;
+  head.scale.set(1.02,1.15,.98);
+  g.add(head);
+
+  const fringe=new THREE.Mesh(new THREE.SphereGeometry(.7,24,24),hair);
+  fringe.position.set(0,5.22,-.08);
+  fringe.scale.set(1.03,1.07,.98);
+  g.add(fringe);
+
+  const bangs=new THREE.Mesh(new THREE.BoxGeometry(1.04,.30,.24),hair);
+  bangs.position.set(0,5.36,.52);
+  g.add(bangs);
+
+  const sideBangL=new THREE.Mesh(new THREE.BoxGeometry(.22,.58,.18),hair);
+  sideBangL.position.set(-.46,5.05,.38);
+  sideBangL.rotation.z=.12;
+  g.add(sideBangL);
+  const sideBangR=sideBangL.clone();
+  sideBangR.position.x=.46;
+  sideBangR.rotation.z=-.12;
+  g.add(sideBangR);
+
+  const tailL=new THREE.Mesh(new THREE.CapsuleGeometry(.12,1.2,4,10),hair);
+  tailL.position.set(-.56,4.72,-.26);
+  tailL.rotation.z=.42;
+  g.add(tailL);
+  const tailR=tailL.clone();
+  tailR.position.x=.56;
+  tailR.rotation.z=-.42;
+  g.add(tailR);
+
+  const bowL=new THREE.Mesh(new THREE.BoxGeometry(.24,.12,.08),trim);
+  bowL.position.set(-.38,4.92,-.1);
+  bowL.rotation.z=.5;
+  g.add(bowL);
+  const bowR=bowL.clone();
+  bowR.position.x=.38;
+  bowR.rotation.z=-.5;
+  g.add(bowR);
+  const bowCenter=new THREE.Mesh(new THREE.SphereGeometry(.07,12,12),trim);
+  bowCenter.position.set(0,4.92,-.08);
+  g.add(bowCenter);
+
+  const eyeWhiteL=new THREE.Mesh(new THREE.SphereGeometry(.11,16,16),eyeWhite);
+  eyeWhiteL.position.set(-.22,5.12,.57);
+  eyeWhiteL.scale.set(1.0,1.18,.5);
+  g.add(eyeWhiteL);
+  const eyeWhiteR=eyeWhiteL.clone();
+  eyeWhiteR.position.x=.22;
+  g.add(eyeWhiteR);
+
+  const irisL=new THREE.Mesh(new THREE.SphereGeometry(.05,14,14),eyeIris);
+  irisL.position.set(-.22,5.09,.65);
+  irisL.scale.set(1.0,1.08,.4);
+  g.add(irisL);
+  const irisR=irisL.clone();
+  irisR.position.x=.22;
+  g.add(irisR);
+
+  const blushL=new THREE.Mesh(new THREE.SphereGeometry(.07,12,12),blush);
+  blushL.position.set(-.28,4.9,.58);
+  blushL.scale.set(1.4,.7,.25);
+  g.add(blushL);
+  const blushR=blushL.clone();
+  blushR.position.x=.28;
+  g.add(blushR);
+
+  const sleeveL=new THREE.Mesh(new THREE.SphereGeometry(.18,16,16),trim);
+  sleeveL.position.set(-.48,3.8,0);
+  g.add(sleeveL);
+  const sleeveR=sleeveL.clone();
+  sleeveR.position.x=.48;
+  g.add(sleeveR);
+
+  const armL=new THREE.Mesh(new THREE.CapsuleGeometry(.105,1.02,4,10),skin);
+  armL.position.set(-.7,3.0,0);
+  armL.rotation.z=.08;
+  g.add(armL);
+  const armR=armL.clone();
+  armR.position.x=.7;
+  armR.rotation.z=-.08;
+  g.add(armR);
+
+  const handL=new THREE.Mesh(new THREE.SphereGeometry(.12,12,12),skin);
+  handL.position.set(-.72,2.33,.02);
+  g.add(handL);
+  const handR=handL.clone();
+  handR.position.x=.72;
+  g.add(handR);
+
+  const thighL=new THREE.Mesh(new THREE.CapsuleGeometry(.14,1.22,5,10),skin);
+  thighL.position.set(-.2,1.12,0);
+  thighL.scale.set(.9,1.08,.88);
+  g.add(thighL);
+  const thighR=thighL.clone();
+  thighR.position.x=.2;
+  g.add(thighR);
+
+  const sockL=new THREE.Mesh(new THREE.CapsuleGeometry(.13,1.0,5,10),trim);
+  sockL.position.set(-.2,.05,0);
+  sockL.scale.set(.9,1.0,.88);
+  g.add(sockL);
+  const sockR=sockL.clone();
+  sockR.position.x=.2;
+  g.add(sockR);
+
+  const shoeL=new THREE.Mesh(new THREE.BoxGeometry(.24,.15,.56),shoe);
+  shoeL.position.set(-.2,-.7,.12);
+  g.add(shoeL);
+  const shoeR=shoeL.clone();
+  shoeR.position.x=.2;
+  g.add(shoeR);
+
+  const ribbon=new THREE.Mesh(new THREE.ConeGeometry(.62,1.05,4,1,true),trim);
+  ribbon.position.set(0,2.62,.46);
+  ribbon.rotation.x=Math.PI*.92;
+  ribbon.scale.set(.55,.7,.34);
+  g.add(ribbon);
+
+  g.userData={armL,armR,thighL,thighR,sockL,sockR,tailL,tailR,ribbon};
   return g;
 }
 
@@ -282,10 +416,11 @@ function syncAvatars(){
     a.position.x=p.x; a.position.z=p.z; a.position.y=Math.sin((p.step||0)*.9)*.04;
     a.rotation.y += ((p.facing??0)-a.rotation.y)*.18;
     const u=a.userData, w=p.walk||0;
-    u.armL.rotation.x=Math.sin(w)*.55; u.armR.rotation.x=-Math.sin(w)*.55;
-    u.thighL.rotation.x=-Math.sin(w)*.55; u.thighR.rotation.x=Math.sin(w)*.55;
-    u.calfL.rotation.x=Math.max(0,Math.sin(w+.7))*.45; u.calfR.rotation.x=Math.max(0,Math.sin(w+Math.PI+.7))*.45;
-    u.cape.rotation.z=Math.sin(w*.5)*.05;
+    u.armL.rotation.x=Math.sin(w)*.45; u.armR.rotation.x=-Math.sin(w)*.45;
+    u.thighL.rotation.x=-Math.sin(w)*.5; u.thighR.rotation.x=Math.sin(w)*.5;
+    u.sockL.rotation.x=Math.max(0,Math.sin(w+.7))*.28; u.sockR.rotation.x=Math.max(0,Math.sin(w+Math.PI+.7))*.28;
+    u.tailL.rotation.x=.18+Math.sin(w*.5)*.12; u.tailR.rotation.x=.18+Math.sin(w*.5+1.2)*.12;
+    u.ribbon.rotation.z=Math.sin(w*.5)*.04;
   }
 }
 
@@ -296,7 +431,7 @@ function connect(){
   setStatus("接続中");
   players={};
   renderPlayers();
-  socket.onopen=()=>{setStatus("接続済み");debug("ws open");systemMessage(`ルーム「${room}」に接続しました`);send({type:"join",roomId:room,player:{id:selfId,name,x:self.x,z:self.z,walk:self.walk,facing:self.facing,palette:self.palette,colorCss:self.colorCss,lastSeen:Date.now()}});};
+  socket.onopen=()=>{setStatus("接続済み");debug("ws open");systemMessage(`ルーム「${room}」に接続しました`); nameInput.value = name;send({type:"join",roomId:room,player:{id:selfId,name,x:self.x,z:self.z,walk:self.walk,facing:self.facing,palette:self.palette,colorCss:self.colorCss,lastSeen:Date.now()}});};
   socket.onmessage=(event)=>{
     const msg=JSON.parse(event.data);
     if(msg.type==="snapshot"){players={}; for(const p of msg.players||[])players[p.id]=p; messages=[...(msg.messages||[]),{id:uid(),system:true,text:"接続しました",ts:Date.now()}].slice(-90); renderPlayers(); renderChat(); syncAvatars(); return;}
@@ -318,12 +453,37 @@ let cameraHeight = 4.2;
 const cameraDistanceMin = 2.2;
 const cameraDistanceMax = 12.0;
 
-applyNameBtn.onclick=()=>{const v=nameInput.value.trim().slice(0,18);if(v){name=v;localStorage.setItem("mmo_name",v);broadcastPresence(true);renderPlayers();}};
+applyNameBtn.onclick=()=>{const v=nameInput.value.trim().slice(0,18);if(v){name=v;sessionStorage.setItem("mmo_name",v);systemMessage(`表示名を ${v} に変更しました`);broadcastPresence(true);renderPlayers();}};
 reconnectBtn.onclick=()=>{room=roomInput.value.trim().replace(/\s+/g,"-").slice(0,20)||"velvet-district-3d";setRoomUrl();connect();};
 resetBtn.onclick=()=>{self.x=-28+randPlayer(8);self.z=14+randPlayer(8);broadcastPresence(true);};
 sendBtn.onclick=sendChat;
-chatInput.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();sendChat();}});
-window.addEventListener("keydown",e=>{const tag=document.activeElement?.tagName;const typing=tag==="INPUT"||tag==="TEXTAREA";const key=e.key.toLowerCase();if(["arrowup","arrowdown","arrowleft","arrowright"," "].includes(key)&&!typing)e.preventDefault();if((["w","a","s","d","shift"].includes(key)||key.startsWith("arrow"))&&!typing){e.preventDefault();keys[key]=true;}},{passive:false});
+function unlockForUI(){ if(controls.isLocked) controls.unlock(); }
+[nameInput, roomInput, chatInput, applyNameBtn, reconnectBtn, resetBtn, sendBtn].forEach(el=>{
+  el.addEventListener("mousedown", unlockForUI);
+  el.addEventListener("focus", unlockForUI);
+});
+chatInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    e.preventDefault();
+    sendChat();
+  }
+});
+window.addEventListener("keydown",e=>{
+  const tag=document.activeElement?.tagName;
+  const typing=tag==="INPUT"||tag==="TEXTAREA";
+  const key=e.key.toLowerCase();
+  if((key==="t" || key==="enter") && !typing){
+    e.preventDefault();
+    unlockForUI();
+    chatInput.focus();
+    return;
+  }
+  if(["arrowup","arrowdown","arrowleft","arrowright"," "].includes(key)&&!typing)e.preventDefault();
+  if((["w","a","s","d","shift"].includes(key)||key.startsWith("arrow"))&&!typing){
+    e.preventDefault();
+    keys[key]=true;
+  }
+},{passive:false});
 window.addEventListener("keyup",e=>{const key=e.key.toLowerCase();if(["w","a","s","d","shift","arrowup","arrowdown","arrowleft","arrowright"].includes(key))keys[key]=false;});
 window.addEventListener("resize",()=>{renderer.setSize(window.innerWidth,window.innerHeight);camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();});
 
