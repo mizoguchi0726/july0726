@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const WebSocket = require("ws");
 const path = require("path");
+
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
@@ -11,42 +12,46 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (_req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 
 const rooms = new Map();
-const getRoom = (id) => {
-  if (!rooms.has(id)) rooms.set(id, { players: new Map(), sockets: new Set(), messages: [] });
-  return rooms.get(id);
-};
-const send = (ws, data) => ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify(data));
-const broadcast = (roomId, data, except = null) => {
+function getRoom(roomId) {
+  if (!rooms.has(roomId)) rooms.set(roomId, { players: new Map(), sockets: new Set(), messages: [] });
+  return rooms.get(roomId);
+}
+function send(ws, data) { if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(data)); }
+function broadcast(roomId, data, except = null) {
   const room = rooms.get(roomId); if (!room) return;
   for (const sock of room.sockets) if (sock !== except) send(sock, data);
-};
-const broadcastAll = (roomId, data) => {
+}
+function broadcastAll(roomId, data) {
   const room = rooms.get(roomId); if (!room) return;
   for (const sock of room.sockets) send(sock, data);
-};
+}
 
 wss.on("connection", (ws) => {
-  ws.playerId = null; ws.roomId = null;
-  send(ws, { type: "hello", serverTime: Date.now() });
+  ws.playerId = null;
+  ws.roomId = null;
 
   ws.on("message", (raw) => {
-    let msg; try { msg = JSON.parse(raw.toString()); } catch { return; }
+    let msg;
+    try { msg = JSON.parse(raw.toString()); } catch { return; }
 
     if (msg.type === "join") {
       const roomId = String(msg.roomId || "velvet-district-3d");
       const player = msg.player || {};
-      ws.playerId = player.id; ws.roomId = roomId;
+      ws.playerId = player.id;
+      ws.roomId = roomId;
+
       const room = getRoom(roomId);
       room.sockets.add(ws);
       room.players.set(player.id, { ...player, lastSeen: Date.now() });
+
       send(ws, {
         type: "snapshot",
-        roomId,
         selfId: player.id,
         players: Array.from(room.players.values()),
-        messages: room.messages.slice(-40),
+        messages: room.messages.slice(-50),
       });
-      broadcast(roomId, { type: "player_joined", player: { ...player, lastSeen: Date.now() } }, ws);
+
+      broadcast(roomId, { type: "player_joined", player: room.players.get(player.id) }, ws);
       return;
     }
 
@@ -69,8 +74,9 @@ wss.on("connection", (ws) => {
         ts: Date.now(),
       };
       room.messages.push(message);
-      room.messages = room.messages.slice(-80);
+      room.messages = room.messages.slice(-100);
       broadcastAll(ws.roomId, { type: "chat", message });
+      return;
     }
   });
 
@@ -78,10 +84,15 @@ wss.on("connection", (ws) => {
     if (!ws.roomId || !ws.playerId) return;
     const room = rooms.get(ws.roomId);
     if (!room) return;
+
     room.sockets.delete(ws);
     const leaving = room.players.get(ws.playerId);
     room.players.delete(ws.playerId);
-    if (leaving) broadcast(ws.roomId, { type: "leave", id: ws.playerId, name: leaving.name });
+
+    if (leaving) {
+      broadcast(ws.roomId, { type: "leave", id: ws.playerId, name: leaving.name });
+    }
+
     if (room.sockets.size === 0) rooms.delete(ws.roomId);
   });
 });
@@ -99,4 +110,6 @@ setInterval(() => {
   }
 }, 3000);
 
-server.listen(PORT, () => console.log(`MMO server running on http://localhost:${PORT}`));
+server.listen(PORT, () => {
+  console.log(`MMO server running on http://localhost:${PORT}`);
+});

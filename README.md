@@ -1,4 +1,4 @@
-# Velvet Night District 3D v6
+# Velvet Night District 3D v6 fixed
 
 npm install
 npm start
@@ -9,9 +9,9 @@ Render:
 
 内容:
 - Three.js 3D版
-- 女の子体型の3Dプレイアブルキャラ
 - WASD移動
 - マウス視点変更（Pointer Lock）
+- 視点ロック用オーバーレイ表示つき
 - Shiftダッシュ
 - 夜の街ワールド
 - 画面横オーバーレイチャット
