@@ -1,23 +1,26 @@
-# Velvet Night District v4
+# Velvet Night District 3D v5
 
 ## 使い方
-
-```bash
 npm install
 npm start
-```
 
-ブラウザで:
+ブラウザ:
 http://localhost:3000
 
 ## Render
 - Build Command: npm install
 - Start Command: npm start
 
-## 改善点
-- 共有マップ
-- WASD推奨
-- 矢印キーのスクロール抑止
-- チャット二重表示修正
-- ゲーム画面内オーバーレイチャット
-- ダークで妖艶な世界観の見た目に刷新
+## 内容
+- Three.js 3D版
+- 女の子体型の3Dプレイアブルキャラ
+- 後方カメラ追従
+- 夜の街ワールド
+- 画面横オーバーレイチャット
+- マルチプレイ対応
+
+## 次にやるとさらに良いこと
+- VRM / GLB の実モデル差し替え
+- 本格歩行モーション
+- 表情 / 髪揺れ
+- 高品質背景アセット

@@ -1,8 +1,7 @@
 {
-  "name": "networked-browser-mmo-demo",
-  "version": "1.3.0",
+  "name": "threejs-girl-mmo-v5",
+  "version": "1.0.0",
   "private": true,
-  "description": "Stylized networked browser MMO demo with overlay chat and shared world",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
