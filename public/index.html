@@ -8,7 +8,7 @@
 :root{--panel:rgba(10,10,18,.72);--line:rgba(255,255,255,.08);--text:#f7f2ff;--muted:#b6aeca;--rose:#ff6bb0;--violet:#9a67ff;--gold:#f6cf86;--shadow:0 24px 60px rgba(0,0,0,.32)}
 *{box-sizing:border-box} html,body{height:100%;margin:0;overflow:hidden;background:radial-gradient(circle at 20% 0%, rgba(154,103,255,.18), transparent 26%),radial-gradient(circle at 80% 0%, rgba(255,107,176,.14), transparent 24%),linear-gradient(180deg,#090812 0%,#05050a 100%);color:var(--text);font-family:Inter,system-ui,sans-serif}
 #app{position:relative;width:100%;height:100%} #scene{position:absolute;inset:0}
-.brand,.statusCard,.chatPanel,.playersPanel,.controls,.legend,.prompt{backdrop-filter:blur(14px);background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow)}
+.brand,.statusCard,.chatPanel,.playersPanel,.controls,.legend,.prompt,.debug{backdrop-filter:blur(14px);background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow)}
 .hud{position:absolute;left:18px;top:18px;display:flex;gap:12px;align-items:flex-start;z-index:5;flex-wrap:wrap}
 .brand{border-radius:24px;padding:14px 16px;min-width:320px}.brand small{display:block;color:var(--gold);font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;font-weight:800}.brand h1{margin:0;font-size:26px;letter-spacing:-.03em}.brand p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.55;max-width:460px}
 .statusCard{border-radius:22px;padding:12px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pill{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);font-size:13px}
@@ -20,10 +20,18 @@
 .playersPanel{border-radius:26px;overflow:hidden;display:flex;flex-direction:column;min-height:220px}.playersList{padding:12px;display:flex;flex-direction:column;gap:8px;overflow:auto}.player{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.05)}.left{display:flex;gap:8px;align-items:center}.dot{width:12px;height:12px;border-radius:999px;display:inline-block}
 .bottomBar{position:absolute;left:18px;bottom:18px;z-index:5;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}.controls,.legend{border-radius:24px;padding:14px;min-width:320px}.controls h3,.legend h3,.prompt h2{margin:0 0 12px;font-size:17px}.controls .row{display:flex;gap:8px;margin-bottom:10px}
 .hint{color:var(--muted);font-size:12px;line-height:1.6;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:10px 12px}.legendGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.legendGrid div{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);font-size:12px;color:#d7d0e6}
-.center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:20}.prompt{padding:24px 28px;border-radius:28px;text-align:center;max-width:540px}.prompt h2{font-size:30px;margin-bottom:10px}.prompt p{margin:0;color:var(--muted);line-height:1.7}.hidden{display:none!important}
-.debug{position:absolute;left:18px;top:160px;z-index:30;background:rgba(0,0,0,.7);color:#9df3ff;padding:8px 10px;border-radius:10px;font-size:12px;white-space:pre-wrap;max-width:420px}
+.center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:20}.prompt{padding:24px 28px;border-radius:28px;text-align:center;max-width:540px}.prompt h2{font-size:30px;margin-bottom:10px}.prompt p{margin:0;color:var(--muted);line-height:1.7}
+.debug{position:absolute;left:18px;top:150px;z-index:30;color:#9df3ff;padding:8px 10px;border-radius:12px;font-size:12px;max-width:480px;white-space:pre-wrap}
+.hidden{display:none!important}
 @media (max-width:1100px){.rightDock{width:min(360px,calc(100vw - 36px));top:auto;bottom:18px;height:60vh}.bottomBar{display:none}.brand{min-width:0;max-width:calc(100vw - 36px)}}
 </style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js"
+  }
+}
+</script>
 </head>
 <body>
 <div id="app">
@@ -45,11 +53,12 @@
 </div>
 
 <script type="module">
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js";
+import * as THREE from "three";
 import { PointerLockControls } from "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/controls/PointerLockControls.js";
 
 const debugBox=document.getElementById("debugBox");
-const debug=(...a)=>{debugBox.textContent=a.map(v=>typeof v==="string"?v:JSON.stringify(v)).join(" | "); console.log(...a);};
+const debug=(...a)=>{debugBox.textContent=a.join(" | "); console.log(...a);};
+debug("imports","ok");
 
 const WORLD_W=140, WORLD_H=100;
 const COLORS=[{body:0xff72b1,accent:0xffd0e1},{body:0x8f6bff,accent:0xd9c9ff},{body:0x67b7ff,accent:0xcde7ff},{body:0xffb84d,accent:0xffe4b3},{body:0x4fe0b8,accent:0xc2fff0},{body:0xff6e7f,accent:0xffc2cb}];
@@ -88,7 +97,7 @@ scene.add(controls.getObject());
 
 controls.addEventListener("lock", ()=>{overlayCenter.classList.add("hidden"); debug("pointer","locked");});
 controls.addEventListener("unlock", ()=>{overlayCenter.classList.remove("hidden"); debug("pointer","unlocked");});
-startBtn.addEventListener("click", ()=>{debug("start clicked"); controls.lock();});
+startBtn.addEventListener("click", ()=>{debug("start","clicked"); controls.lock();});
 
 scene.add(new THREE.HemisphereLight(0xffd3eb,0x1b1020,1.2));
 const dir=new THREE.DirectionalLight(0xfff0c7,1.5);dir.position.set(10,18,6);scene.add(dir);
@@ -131,9 +140,6 @@ function building({x,z,w,h,d,color,emissive,neon}){
 {x:-41,z:24,w:10,h:10,d:10,color:0x241a2e,emissive:0x100815,neon:0x7fdfff}
 ].forEach(building);
 
-const canal=new THREE.Mesh(new THREE.PlaneGeometry(28,16),new THREE.MeshStandardMaterial({color:0x241c46,emissive:0x1a1540,emissiveIntensity:.65,roughness:.25,metalness:.22}));
-canal.rotation.x=-Math.PI/2; canal.position.set(20,.01,6); scene.add(canal); addObstacle(20,6,28,16);
-
 function lamp(x,z,color){
   const pole=new THREE.Mesh(new THREE.CylinderGeometry(.12,.18,4.4,8),new THREE.MeshStandardMaterial({color:0x2a2133,roughness:.9}));
   pole.position.set(x,2.2,z); scene.add(pole);
@@ -150,7 +156,6 @@ function createGirlAvatar(colors){
   const accent=new THREE.MeshStandardMaterial({color:colors.accent,roughness:.5});
   const hair=new THREE.MeshStandardMaterial({color:0x1a0f1c,roughness:.92});
   const boot=new THREE.MeshStandardMaterial({color:0x181019,roughness:.95});
-
   const hips=new THREE.Mesh(new THREE.CapsuleGeometry(.52,.9,6,12),body);hips.position.y=2.35;hips.scale.set(1.1,1,.92);g.add(hips);
   const waist=new THREE.Mesh(new THREE.CapsuleGeometry(.38,.55,6,12),body);waist.position.y=3.0;waist.scale.set(.9,1,.75);g.add(waist);
   const chest=new THREE.Mesh(new THREE.CapsuleGeometry(.46,.85,6,12),accent);chest.position.y=3.75;chest.scale.set(1.08,1,.86);g.add(chest);
@@ -202,31 +207,19 @@ function connect(){
   setStatus("接続中");
   players={};
   renderPlayers();
-
-  socket.onopen=()=>{
-    setStatus("接続済み");
-    systemMessage(`ルーム「${room}」に接続しました`);
-    debug("ws","open");
-    send({type:"join",roomId:room,player:{id:selfId,name,x:self.x,z:self.z,walk:self.walk,facing:self.facing,palette:self.palette,colorCss:self.colorCss,lastSeen:Date.now()}});
-  };
+  socket.onopen=()=>{setStatus("接続済み");debug("ws","open");systemMessage(`ルーム「${room}」に接続しました`);send({type:"join",roomId:room,player:{id:selfId,name,x:self.x,z:self.z,walk:self.walk,facing:self.facing,palette:self.palette,colorCss:self.colorCss,lastSeen:Date.now()}});};
   socket.onmessage=(event)=>{
     const msg=JSON.parse(event.data);
     if(msg.type==="snapshot"){players={}; for(const p of msg.players||[])players[p.id]=p; messages=[...(msg.messages||[]),{id:uid(),system:true,text:"接続しました",ts:Date.now()}].slice(-90); renderPlayers(); renderChat(); syncAvatars(); return;}
-    if(msg.type==="player_joined"){if(msg.player.id!==selfId){players[msg.player.id]=msg.player;systemMessage(`${msg.player.name} が参加しました`);renderPlayers()} return;}
-    if(msg.type==="presence"){if(msg.player.id!==selfId){players[msg.player.id]=msg.player;renderPlayers()} return;}
+    if(msg.type==="player_joined"){if(msg.player.id!==selfId){players[msg.player.id]=msg.player;systemMessage(`${msg.player.name} が参加しました`);renderPlayers()}return;}
+    if(msg.type==="presence"){if(msg.player.id!==selfId){players[msg.player.id]=msg.player;renderPlayers()}return;}
     if(msg.type==="chat"){messages.push(msg.message);messages=messages.slice(-90);renderChat();return;}
     if(msg.type==="leave"){delete players[msg.id];removeAvatar(msg.id);systemMessage(`${msg.name} が退出しました`);renderPlayers();}
   };
   socket.onclose=()=>{setStatus("切断");presenceText.textContent="未接続";debug("ws","close");};
-  socket.onerror=(e)=>{setStatus("エラー");debug("ws","error",String(e));};
+  socket.onerror=(e)=>{setStatus("エラー");debug("ws","error");};
 }
-function broadcastPresence(force=false){
-  const now=Date.now();
-  if(!force&&now-lastPresence<80)return;
-  lastPresence=now;
-  players[selfId]={id:selfId,name,x:self.x,z:self.z,walk:self.walk,facing:self.facing,palette:self.palette,colorCss:self.colorCss,lastSeen:now};
-  send({type:"presence",player:players[selfId]});
-}
+function broadcastPresence(force=false){const now=Date.now();if(!force&&now-lastPresence<80)return;lastPresence=now;players[selfId]={id:selfId,name,x:self.x,z:self.z,walk:self.walk,facing:self.facing,palette:self.palette,colorCss:self.colorCss,lastSeen:now};send({type:"presence",player:players[selfId]});}
 function sendChat(){const text=chatInput.value.trim();if(!text)return;send({type:"chat",message:{id:uid(),room,playerId:selfId,playerName:name,text}});chatInput.value="";}
 
 const selfPalette=COLORS[randPlayer(COLORS.length)];
@@ -238,26 +231,16 @@ resetBtn.onclick=()=>{self.x=-28+randPlayer(8);self.z=14+randPlayer(8);broadcast
 sendBtn.onclick=sendChat;
 chatInput.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();sendChat();}});
 
-window.addEventListener("keydown",e=>{
-  const tag=document.activeElement?.tagName;
-  const typing=tag==="INPUT"||tag==="TEXTAREA";
-  const key=e.key.toLowerCase();
-  if(["arrowup","arrowdown","arrowleft","arrowright"," "].includes(key)&&!typing)e.preventDefault();
-  if((["w","a","s","d","shift"].includes(key)||key.startsWith("arrow"))&&!typing){e.preventDefault();keys[key]=true;}
-},{passive:false});
-window.addEventListener("keyup",e=>{
-  const key=e.key.toLowerCase();
-  if(["w","a","s","d","shift","arrowup","arrowdown","arrowleft","arrowright"].includes(key))keys[key]=false;
-});
-window.addEventListener("resize",()=>{
-  renderer.setSize(window.innerWidth,window.innerHeight);
-  camera.aspect=window.innerWidth/window.innerHeight;
-  camera.updateProjectionMatrix();
-});
+window.addEventListener("keydown",e=>{const tag=document.activeElement?.tagName;const typing=tag==="INPUT"||tag==="TEXTAREA";const key=e.key.toLowerCase();if(["arrowup","arrowdown","arrowleft","arrowright"," "].includes(key)&&!typing)e.preventDefault();if((["w","a","s","d","shift"].includes(key)||key.startsWith("arrow"))&&!typing){e.preventDefault();keys[key]=true;}},{passive:false});
+window.addEventListener("keyup",e=>{const key=e.key.toLowerCase();if(["w","a","s","d","shift","arrowup","arrowdown","arrowleft","arrowright"].includes(key))keys[key]=false;});
+window.addEventListener("resize",()=>{renderer.setSize(window.innerWidth,window.innerHeight);camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();});
 
 setRoomUrl();
 connect();
-debug("ui","ready");
+
+controls.addEventListener("lock", ()=>{overlayCenter.classList.add("hidden"); debug("pointer","locked");});
+controls.addEventListener("unlock", ()=>{overlayCenter.classList.remove("hidden"); debug("pointer","unlocked");});
+startBtn.addEventListener("click", ()=>{debug("start","clicked"); controls.lock();});
 
 const forward=new THREE.Vector3(), right=new THREE.Vector3(), move=new THREE.Vector3();
 const clock=new THREE.Clock();
@@ -272,12 +255,10 @@ function tick(){
     forward.normalize();
     right.crossVectors(forward, new THREE.Vector3(0,1,0)).normalize();
     move.set(0,0,0);
-
     if(keys["w"]||keys["arrowup"]) move.add(forward);
     if(keys["s"]||keys["arrowdown"]) move.sub(forward);
     if(keys["a"]||keys["arrowleft"]) move.sub(right);
     if(keys["d"]||keys["arrowright"]) move.add(right);
-
     if(move.lengthSq()>0){
       move.normalize();
       const speed=(keys["shift"]?4.4:2.5)*10*delta;
@@ -312,6 +293,7 @@ function tick(){
 
   renderer.render(scene,camera);
 }
+debug("ui","ready");
 tick();
 setInterval(()=>broadcastPresence(true),700);
 </script>
