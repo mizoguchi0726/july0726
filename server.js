@@ -12,17 +12,21 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (_req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 
 const rooms = new Map();
-function getRoom(roomId) {
-  if (!rooms.has(roomId)) rooms.set(roomId, { players: new Map(), sockets: new Set(), messages: [] });
-  return rooms.get(roomId);
+function getRoom(id) {
+  if (!rooms.has(id)) rooms.set(id, { players: new Map(), sockets: new Set(), messages: [] });
+  return rooms.get(id);
 }
-function send(ws, data) { if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(data)); }
+function send(ws, data) {
+  if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(data));
+}
 function broadcast(roomId, data, except = null) {
-  const room = rooms.get(roomId); if (!room) return;
+  const room = rooms.get(roomId);
+  if (!room) return;
   for (const sock of room.sockets) if (sock !== except) send(sock, data);
 }
 function broadcastAll(roomId, data) {
-  const room = rooms.get(roomId); if (!room) return;
+  const room = rooms.get(roomId);
+  if (!room) return;
   for (const sock of room.sockets) send(sock, data);
 }
 
@@ -89,10 +93,7 @@ wss.on("connection", (ws) => {
     const leaving = room.players.get(ws.playerId);
     room.players.delete(ws.playerId);
 
-    if (leaving) {
-      broadcast(ws.roomId, { type: "leave", id: ws.playerId, name: leaving.name });
-    }
-
+    if (leaving) broadcast(ws.roomId, { type: "leave", id: ws.playerId, name: leaving.name });
     if (room.sockets.size === 0) rooms.delete(ws.roomId);
   });
 });
@@ -110,6 +111,4 @@ setInterval(() => {
   }
 }, 3000);
 
-server.listen(PORT, () => {
-  console.log(`MMO server running on http://localhost:${PORT}`);
-});
+server.listen(PORT, () => console.log(`MMO server running on http://localhost:${PORT}`));

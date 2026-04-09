@@ -5,126 +5,51 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Velvet Night District 3D</title>
 <style>
-:root{
-  --panel:rgba(10,10,18,.72);
-  --line:rgba(255,255,255,.08);
-  --text:#f7f2ff;
-  --muted:#b6aeca;
-  --rose:#ff6bb0;
-  --violet:#9a67ff;
-  --gold:#f6cf86;
-  --shadow:0 24px 60px rgba(0,0,0,.32);
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;overflow:hidden;background:
-radial-gradient(circle at 20% 0%, rgba(154,103,255,.18), transparent 26%),
-radial-gradient(circle at 80% 0%, rgba(255,107,176,.14), transparent 24%),
-linear-gradient(180deg,#090812 0%,#05050a 100%);color:var(--text);font-family:Inter,system-ui,sans-serif}
-#app{position:relative;width:100%;height:100%}
-#scene{position:absolute;inset:0}
+:root{--panel:rgba(10,10,18,.72);--line:rgba(255,255,255,.08);--text:#f7f2ff;--muted:#b6aeca;--rose:#ff6bb0;--violet:#9a67ff;--gold:#f6cf86;--shadow:0 24px 60px rgba(0,0,0,.32)}
+*{box-sizing:border-box} html,body{height:100%;margin:0;overflow:hidden;background:radial-gradient(circle at 20% 0%, rgba(154,103,255,.18), transparent 26%),radial-gradient(circle at 80% 0%, rgba(255,107,176,.14), transparent 24%),linear-gradient(180deg,#090812 0%,#05050a 100%);color:var(--text);font-family:Inter,system-ui,sans-serif}
+#app{position:relative;width:100%;height:100%} #scene{position:absolute;inset:0}
 .brand,.statusCard,.chatPanel,.playersPanel,.controls,.legend,.prompt{backdrop-filter:blur(14px);background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow)}
 .hud{position:absolute;left:18px;top:18px;display:flex;gap:12px;align-items:flex-start;z-index:5;flex-wrap:wrap}
-.brand{border-radius:24px;padding:14px 16px;min-width:320px}
-.brand small{display:block;color:var(--gold);font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;font-weight:800}
-.brand h1{margin:0;font-size:26px;letter-spacing:-.03em}
-.brand p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.55;max-width:460px}
-.statusCard{border-radius:22px;padding:12px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);font-size:13px}
+.brand{border-radius:24px;padding:14px 16px;min-width:320px}.brand small{display:block;color:var(--gold);font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;font-weight:800}.brand h1{margin:0;font-size:26px;letter-spacing:-.03em}.brand p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.55;max-width:460px}
+.statusCard{border-radius:22px;padding:12px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pill{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);font-size:13px}
 .rightDock{position:absolute;right:18px;top:18px;bottom:18px;width:360px;display:flex;flex-direction:column;gap:14px;z-index:6}
-.chatPanel{border-radius:26px;overflow:hidden;display:flex;flex-direction:column;min-height:340px;max-height:58vh}
-.chatHead,.playersHead{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg, rgba(255,107,176,.10), rgba(154,103,255,.05))}
-.chatHead strong,.playersHead strong{display:block;font-size:18px}
-.chatHead span,.playersHead span{display:block;margin-top:4px;color:var(--muted);font-size:12px}
-.chatLog{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
-.msg{padding:12px 14px;border-radius:18px;max-width:88%;font-size:14px;line-height:1.5;border:1px solid rgba(255,255,255,.05)}
-.msg.self{margin-left:auto;background:linear-gradient(180deg,#8a2b66,#55285e)}
-.msg.other{background:rgba(255,255,255,.06)}
-.msg.system{background:rgba(255,255,255,.07);color:#d6cfe3;max-width:100%}
-.meta{font-size:11px;font-weight:800;margin-bottom:5px;color:#f3c4d9}
-.msg.other .meta{color:#aadaff}
-.chatInput{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,.06)}
-.chatInput input,.controls input{flex:1;height:46px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.06);color:white;padding:0 14px;outline:none}
-.btn{height:46px;border:none;border-radius:14px;padding:0 16px;background:linear-gradient(135deg,var(--rose),var(--violet));color:white;font-weight:900;cursor:pointer}
-.btn.secondary{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.07)}
-.playersPanel{border-radius:26px;overflow:hidden;display:flex;flex-direction:column;min-height:220px}
-.playersList{padding:12px;display:flex;flex-direction:column;gap:8px;overflow:auto}
-.player{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.05)}
-.left{display:flex;gap:8px;align-items:center}
-.dot{width:12px;height:12px;border-radius:999px;display:inline-block}
-.bottomBar{position:absolute;left:18px;bottom:18px;z-index:5;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
-.controls,.legend{border-radius:24px;padding:14px;min-width:320px}
-.controls h3,.legend h3,.prompt h2{margin:0 0 12px;font-size:17px}
-.controls .row{display:flex;gap:8px;margin-bottom:10px}
-.hint{color:var(--muted);font-size:12px;line-height:1.6;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:10px 12px}
-.legendGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.legendGrid div{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);font-size:12px;color:#d7d0e6}
-.center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:10}
-.prompt{padding:24px 28px;border-radius:28px;text-align:center;max-width:540px}
-.prompt h2{font-size:30px;margin-bottom:10px}
-.prompt p{margin:0;color:var(--muted);line-height:1.7}
-.hidden{display:none!important}
-@media (max-width:1100px){
-  .rightDock{width:min(360px,calc(100vw - 36px));top:auto;bottom:18px;height:60vh}
-  .bottomBar{display:none}
-  .brand{min-width:0;max-width:calc(100vw - 36px)}
-}
+.chatPanel{border-radius:26px;overflow:hidden;display:flex;flex-direction:column;min-height:340px;max-height:58vh}.chatHead,.playersHead{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg, rgba(255,107,176,.10), rgba(154,103,255,.05))}.chatHead strong,.playersHead strong{display:block;font-size:18px}.chatHead span,.playersHead span{display:block;margin-top:4px;color:var(--muted);font-size:12px}
+.chatLog{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}.msg{padding:12px 14px;border-radius:18px;max-width:88%;font-size:14px;line-height:1.5;border:1px solid rgba(255,255,255,.05)}.msg.self{margin-left:auto;background:linear-gradient(180deg,#8a2b66,#55285e)} .msg.other{background:rgba(255,255,255,.06)} .msg.system{background:rgba(255,255,255,.07);color:#d6cfe3;max-width:100%}.meta{font-size:11px;font-weight:800;margin-bottom:5px;color:#f3c4d9}.msg.other .meta{color:#aadaff}
+.chatInput{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,.06)} .chatInput input,.controls input{flex:1;height:46px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.06);color:white;padding:0 14px;outline:none}
+.btn{height:46px;border:none;border-radius:14px;padding:0 16px;background:linear-gradient(135deg,var(--rose),var(--violet));color:white;font-weight:900;cursor:pointer}.btn.secondary{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.07)}
+.playersPanel{border-radius:26px;overflow:hidden;display:flex;flex-direction:column;min-height:220px}.playersList{padding:12px;display:flex;flex-direction:column;gap:8px;overflow:auto}.player{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.05)}.left{display:flex;gap:8px;align-items:center}.dot{width:12px;height:12px;border-radius:999px;display:inline-block}
+.bottomBar{position:absolute;left:18px;bottom:18px;z-index:5;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}.controls,.legend{border-radius:24px;padding:14px;min-width:320px}.controls h3,.legend h3,.prompt h2{margin:0 0 12px;font-size:17px}.controls .row{display:flex;gap:8px;margin-bottom:10px}
+.hint{color:var(--muted);font-size:12px;line-height:1.6;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:10px 12px}.legendGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.legendGrid div{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);font-size:12px;color:#d7d0e6}
+.center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:20}.prompt{padding:24px 28px;border-radius:28px;text-align:center;max-width:540px}.prompt h2{font-size:30px;margin-bottom:10px}.prompt p{margin:0;color:var(--muted);line-height:1.7}.hidden{display:none!important}
+.debug{position:absolute;left:18px;top:160px;z-index:30;background:rgba(0,0,0,.7);color:#9df3ff;padding:8px 10px;border-radius:10px;font-size:12px;white-space:pre-wrap;max-width:420px}
+@media (max-width:1100px){.rightDock{width:min(360px,calc(100vw - 36px));top:auto;bottom:18px;height:60vh}.bottomBar{display:none}.brand{min-width:0;max-width:calc(100vw - 36px)}}
 </style>
 </head>
 <body>
 <div id="app">
   <canvas id="scene"></canvas>
-
   <div class="hud">
-    <div class="brand">
-      <small>Playable 3D heroine prototype</small>
-      <h1>Velvet Night District 3D</h1>
-      <p>クリックで視点を有効化し、<b>WASD + マウス</b>で遊べる版です。</p>
-    </div>
-    <div class="statusCard">
-      <div class="pill" id="playersBadge">0 人</div>
-      <div class="pill" id="roomBadge">room: velvet-district-3d</div>
-      <div class="pill" id="statusBadge">未接続</div>
-    </div>
+    <div class="brand"><small>Playable 3D heroine prototype</small><h1>Velvet Night District 3D</h1><p>クリックで視点を有効化し、<b>WASD + マウス</b>で遊べる版です。</p></div>
+    <div class="statusCard"><div class="pill" id="playersBadge">0 人</div><div class="pill" id="roomBadge">room: velvet-district-3d</div><div class="pill" id="statusBadge">未接続</div></div>
   </div>
-
   <div class="rightDock">
-    <section class="chatPanel">
-      <div class="chatHead"><strong>ライブチャット</strong><span>画面を見ながらそのまま会話できます</span></div>
-      <div class="chatLog" id="chatLog"></div>
-      <div class="chatInput"><input id="chatInput" placeholder="メッセージを入力" /><button class="btn" id="sendBtn">送信</button></div>
-    </section>
-    <section class="playersPanel">
-      <div class="playersHead"><strong>プレイヤー</strong><span id="presenceText">接続待ちです</span></div>
-      <div class="playersList" id="playerList"></div>
-    </section>
+    <section class="chatPanel"><div class="chatHead"><strong>ライブチャット</strong><span>画面を見ながらそのまま会話できます</span></div><div class="chatLog" id="chatLog"></div><div class="chatInput"><input id="chatInput" placeholder="メッセージを入力" /><button class="btn" id="sendBtn">送信</button></div></section>
+    <section class="playersPanel"><div class="playersHead"><strong>プレイヤー</strong><span id="presenceText">接続待ちです</span></div><div class="playersList" id="playerList"></div></section>
   </div>
-
   <div class="bottomBar">
-    <section class="controls">
-      <h3>参加設定</h3>
-      <div class="row"><input id="nameInput" maxlength="18" placeholder="表示名" /><button class="btn" id="applyName">反映</button></div>
-      <div class="row"><input id="roomInput" maxlength="20" placeholder="ルーム名" /><button class="btn secondary" id="reconnectBtn">再接続</button></div>
-      <div class="row"><button class="btn secondary" id="resetBtn">位置リセット</button></div>
-      <div class="hint">操作: <b>WASD</b> 移動 / <b>マウス</b> 視点 / <b>Shift</b> ダッシュ / <b>Esc</b> で視点解除</div>
-    </section>
-    <section class="legend">
-      <h3>この版のポイント</h3>
-      <div class="legendGrid"><div>🌃 3Dの夜街</div><div>💃 女の子体型の3Dキャラ</div><div>🖱️ マウス視点変更</div><div>💬 画面横チャット</div></div>
-    </section>
+    <section class="controls"><h3>参加設定</h3><div class="row"><input id="nameInput" maxlength="18" placeholder="表示名" /><button class="btn" id="applyName">反映</button></div><div class="row"><input id="roomInput" maxlength="20" placeholder="ルーム名" /><button class="btn secondary" id="reconnectBtn">再接続</button></div><div class="row"><button class="btn secondary" id="resetBtn">位置リセット</button></div><div class="hint">操作: <b>WASD</b> 移動 / <b>マウス</b> 視点 / <b>Shift</b> ダッシュ / <b>Esc</b> で視点解除</div></section>
+    <section class="legend"><h3>この版のポイント</h3><div class="legendGrid"><div>🌃 3Dの夜街</div><div>💃 女の子体型の3Dキャラ</div><div>🖱️ マウス視点変更</div><div>💬 画面横チャット</div></div></section>
   </div>
-
-  <div class="center" id="overlayCenter">
-    <div class="prompt" id="lockPrompt">
-      <h2>クリックしてスタート</h2>
-      <p>マウスで視点を回せます。WASDで移動、Shiftでダッシュ、Escで視点解除。</p>
-      <button class="btn" id="startBtn">視点を有効にする</button>
-    </div>
-  </div>
+  <div class="center" id="overlayCenter"><div class="prompt"><h2>クリックしてスタート</h2><p>マウスで視点を回せます。WASDで移動、Shiftでダッシュ、Escで視点解除。</p><button class="btn" id="startBtn">視点を有効にする</button></div></div>
+  <div class="debug" id="debugBox">loading...</div>
 </div>
 
 <script type="module">
-import * as THREE from "https://unpkg.com/three@0.162.0/build/three.module.js";
-import { PointerLockControls } from "https://unpkg.com/three@0.162.0/examples/jsm/controls/PointerLockControls.js";
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js";
+import { PointerLockControls } from "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/controls/PointerLockControls.js";
+
+const debugBox=document.getElementById("debugBox");
+const debug=(...a)=>{debugBox.textContent=a.map(v=>typeof v==="string"?v:JSON.stringify(v)).join(" | "); console.log(...a);};
 
 const WORLD_W=140, WORLD_H=100;
 const COLORS=[{body:0xff72b1,accent:0xffd0e1},{body:0x8f6bff,accent:0xd9c9ff},{body:0x67b7ff,accent:0xcde7ff},{body:0xffb84d,accent:0xffe4b3},{body:0x4fe0b8,accent:0xc2fff0},{body:0xff6e7f,accent:0xffc2cb}];
@@ -133,12 +58,9 @@ const uid=()=>Math.random().toString(36).slice(2,10);
 function createSeededRandom(seed){let s=seed>>>0;return()=>((s=(s*1664525+1013904223)>>>0)/4294967296)}
 const playerRandom=createSeededRandom((Date.now()%1000000)+Math.floor(Math.random()*1000));
 const randPlayer=n=>Math.floor(playerRandom()*n);
-
 const $=(id)=>document.getElementById(id);
-const chatLog=$("chatLog"), chatInput=$("chatInput"), sendBtn=$("sendBtn"), nameInput=$("nameInput"), roomInput=$("roomInput"),
-applyNameBtn=$("applyName"), reconnectBtn=$("reconnectBtn"), resetBtn=$("resetBtn"), playerList=$("playerList"),
-presenceText=$("presenceText"), playersBadge=$("playersBadge"), roomBadge=$("roomBadge"), statusBadge=$("statusBadge"),
-overlayCenter=$("overlayCenter"), startBtn=$("startBtn");
+
+const chatLog=$("chatLog"), chatInput=$("chatInput"), sendBtn=$("sendBtn"), nameInput=$("nameInput"), roomInput=$("roomInput"), applyNameBtn=$("applyName"), reconnectBtn=$("reconnectBtn"), resetBtn=$("resetBtn"), playerList=$("playerList"), presenceText=$("presenceText"), playersBadge=$("playersBadge"), roomBadge=$("roomBadge"), statusBadge=$("statusBadge"), overlayCenter=$("overlayCenter"), startBtn=$("startBtn");
 
 let params=new URLSearchParams(location.search), room=params.get("room")||"velvet-district-3d";
 let name=localStorage.getItem("mmo_name")||`Player-${randPlayer(999)}`;
@@ -146,12 +68,12 @@ const selfId=uid();
 nameInput.value=name; roomInput.value=room;
 let socket=null, players={}, messages=[], keys={}, lastPresence=0;
 
-function setRoomUrl(){const u=new URL(location.href);u.searchParams.set("room",room);history.replaceState({},"",u.toString());roomBadge.textContent=`room: ${room}`}
-function setStatus(text){statusBadge.textContent=text}
-function send(data){if(socket&&socket.readyState===WebSocket.OPEN)socket.send(JSON.stringify(data))}
-function systemMessage(text){messages.push({id:uid(),system:true,text,ts:Date.now()});messages=messages.slice(-90);renderChat()}
-function renderChat(){chatLog.innerHTML="";for(const m of messages){const el=document.createElement("div");el.className="msg "+(m.system?"system":(m.playerId===selfId?"self":"other"));if(m.system){el.textContent=m.text}else{const meta=document.createElement("div");meta.className="meta";meta.textContent=m.playerName;el.appendChild(meta);const body=document.createElement("div");body.textContent=m.text;el.appendChild(body)}chatLog.appendChild(el)}chatLog.scrollTop=chatLog.scrollHeight}
-function renderPlayers(){const arr=Object.values(players).sort((a,b)=>a.name.localeCompare(b.name,"ja"));playerList.innerHTML="";for(const p of arr){const row=document.createElement("div");row.className="player";const left=document.createElement("div");left.className="left";const dot=document.createElement("span");dot.className="dot";dot.style.background=p.colorCss||"#fff";const text=document.createElement("span");text.textContent=p.name+(p.id===selfId?" (あなた)":"");left.append(dot,text);const pos=document.createElement("span");pos.style.color="#b6aeca";pos.style.fontSize="12px";pos.textContent=`${Math.round(p.x)}, ${Math.round(p.z)}`;row.append(left,pos);playerList.appendChild(row)}playersBadge.textContent=`${arr.length} 人`;presenceText.textContent=socket&&socket.readyState===WebSocket.OPEN?"サーバー接続中":"未接続"}
+function setRoomUrl(){const u=new URL(location.href);u.searchParams.set("room",room);history.replaceState({},"",u.toString());roomBadge.textContent=`room: ${room}`;}
+function setStatus(text){statusBadge.textContent=text;}
+function send(data){if(socket&&socket.readyState===WebSocket.OPEN)socket.send(JSON.stringify(data));}
+function systemMessage(text){messages.push({id:uid(),system:true,text,ts:Date.now()});messages=messages.slice(-90);renderChat();}
+function renderChat(){chatLog.innerHTML="";for(const m of messages){const el=document.createElement("div");el.className="msg "+(m.system?"system":(m.playerId===selfId?"self":"other"));if(m.system){el.textContent=m.text}else{const meta=document.createElement("div");meta.className="meta";meta.textContent=m.playerName;el.appendChild(meta);const body=document.createElement("div");body.textContent=m.text;el.appendChild(body)}chatLog.appendChild(el)}chatLog.scrollTop=chatLog.scrollHeight;}
+function renderPlayers(){const arr=Object.values(players).sort((a,b)=>a.name.localeCompare(b.name,"ja"));playerList.innerHTML="";for(const p of arr){const row=document.createElement("div");row.className="player";const left=document.createElement("div");left.className="left";const dot=document.createElement("span");dot.className="dot";dot.style.background=p.colorCss||"#fff";const text=document.createElement("span");text.textContent=p.name+(p.id===selfId?" (あなた)":"");left.append(dot,text);const pos=document.createElement("span");pos.style.color="#b6aeca";pos.style.fontSize="12px";pos.textContent=`${Math.round(p.x)}, ${Math.round(p.z)}`;row.append(left,pos);playerList.appendChild(row)}playersBadge.textContent=`${arr.length} 人`;presenceText.textContent=socket&&socket.readyState===WebSocket.OPEN?"サーバー接続中":"未接続";}
 
 const renderer=new THREE.WebGLRenderer({canvas:$("scene"),antialias:true,alpha:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
@@ -164,9 +86,9 @@ const camera=new THREE.PerspectiveCamera(55,window.innerWidth/window.innerHeight
 const controls=new PointerLockControls(camera, document.body);
 scene.add(controls.getObject());
 
-controls.addEventListener("lock", ()=>overlayCenter.classList.add("hidden"));
-controls.addEventListener("unlock", ()=>overlayCenter.classList.remove("hidden"));
-startBtn.addEventListener("click", ()=>controls.lock());
+controls.addEventListener("lock", ()=>{overlayCenter.classList.add("hidden"); debug("pointer","locked");});
+controls.addEventListener("unlock", ()=>{overlayCenter.classList.remove("hidden"); debug("pointer","unlocked");});
+startBtn.addEventListener("click", ()=>{debug("start clicked"); controls.lock();});
 
 scene.add(new THREE.HemisphereLight(0xffd3eb,0x1b1020,1.2));
 const dir=new THREE.DirectionalLight(0xfff0c7,1.5);dir.position.set(10,18,6);scene.add(dir);
@@ -178,13 +100,13 @@ const ground=new THREE.Mesh(new THREE.PlaneGeometry(WORLD_W,WORLD_H),new THREE.M
 ground.rotation.x=-Math.PI/2;scene.add(ground);
 
 const roadMat=new THREE.MeshStandardMaterial({color:0x37253d,roughness:.9,metalness:.1,emissive:0x140812,emissiveIntensity:.35});
-function road(w,h,x,z,rot=0){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),roadMat);m.rotation.x=-Math.PI/2;m.rotation.z=rot;m.position.set(x,.02,z);scene.add(m)}
+function road(w,h,x,z,rot=0){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),roadMat);m.rotation.x=-Math.PI/2;m.rotation.z=rot;m.position.set(x,.02,z);scene.add(m);}
 road(10,58,-34,10,.12); road(9,34,-16,-6,-.08); road(8,38,6,-17,Math.PI/2+.04);
 
 const worldObstacles=[];
 const addObstacle=(x,z,w,d)=>worldObstacles.push({x,z,w,d});
-function distanceToObstacle(nx,nz,o){const dx=Math.max(Math.abs(nx-o.x)-o.w/2,0);const dz=Math.max(Math.abs(nz-o.z)-o.d/2,0);return Math.hypot(dx,dz)}
-function blocked(nx,nz){if(nx<-WORLD_W/2+2||nx>WORLD_W/2-2||nz<-WORLD_H/2+2||nz>WORLD_H/2-2)return true;return worldObstacles.some(o=>distanceToObstacle(nx,nz,o)<1.2)}
+function distanceToObstacle(nx,nz,o){const dx=Math.max(Math.abs(nx-o.x)-o.w/2,0);const dz=Math.max(Math.abs(nz-o.z)-o.d/2,0);return Math.hypot(dx,dz);}
+function blocked(nx,nz){if(nx<-WORLD_W/2+2||nx>WORLD_W/2-2||nz<-WORLD_H/2+2||nz>WORLD_H/2-2)return true;return worldObstacles.some(o=>distanceToObstacle(nx,nz,o)<1.2);}
 
 function building({x,z,w,h,d,color,emissive,neon}){
   const g=new THREE.Group();
@@ -210,7 +132,7 @@ function building({x,z,w,h,d,color,emissive,neon}){
 ].forEach(building);
 
 const canal=new THREE.Mesh(new THREE.PlaneGeometry(28,16),new THREE.MeshStandardMaterial({color:0x241c46,emissive:0x1a1540,emissiveIntensity:.65,roughness:.25,metalness:.22}));
-canal.rotation.x=-Math.PI/2;canal.position.set(20,.01,6);scene.add(canal);addObstacle(20,6,28,16);
+canal.rotation.x=-Math.PI/2; canal.position.set(20,.01,6); scene.add(canal); addObstacle(20,6,28,16);
 
 function lamp(x,z,color){
   const pole=new THREE.Mesh(new THREE.CylinderGeometry(.12,.18,4.4,8),new THREE.MeshStandardMaterial({color:0x2a2133,roughness:.9}));
@@ -284,26 +206,20 @@ function connect(){
   socket.onopen=()=>{
     setStatus("接続済み");
     systemMessage(`ルーム「${room}」に接続しました`);
-    send({type:"join",roomId:room,player:{id:selfId,name,x:self.x,z:self.z,walk:self.walk,facing:self.facing,palette:self.palette,colorCss:self.colorCss,lastSeen:Date.now()}})
+    debug("ws","open");
+    send({type:"join",roomId:room,player:{id:selfId,name,x:self.x,z:self.z,walk:self.walk,facing:self.facing,palette:self.palette,colorCss:self.colorCss,lastSeen:Date.now()}});
   };
-
   socket.onmessage=(event)=>{
     const msg=JSON.parse(event.data);
-    if(msg.type==="snapshot"){
-      players={}; for(const p of msg.players||[])players[p.id]=p;
-      messages=[...(msg.messages||[]),{id:uid(),system:true,text:"接続しました",ts:Date.now()}].slice(-90);
-      renderPlayers(); renderChat(); syncAvatars(); return;
-    }
-    if(msg.type==="player_joined"){ if(msg.player.id!==selfId){players[msg.player.id]=msg.player;systemMessage(`${msg.player.name} が参加しました`);renderPlayers()} return; }
-    if(msg.type==="presence"){ if(msg.player.id!==selfId){players[msg.player.id]=msg.player;renderPlayers()} return; }
-    if(msg.type==="chat"){ messages.push(msg.message); messages=messages.slice(-90); renderChat(); return; }
-    if(msg.type==="leave"){ delete players[msg.id]; removeAvatar(msg.id); systemMessage(`${msg.name} が退出しました`); renderPlayers(); }
+    if(msg.type==="snapshot"){players={}; for(const p of msg.players||[])players[p.id]=p; messages=[...(msg.messages||[]),{id:uid(),system:true,text:"接続しました",ts:Date.now()}].slice(-90); renderPlayers(); renderChat(); syncAvatars(); return;}
+    if(msg.type==="player_joined"){if(msg.player.id!==selfId){players[msg.player.id]=msg.player;systemMessage(`${msg.player.name} が参加しました`);renderPlayers()} return;}
+    if(msg.type==="presence"){if(msg.player.id!==selfId){players[msg.player.id]=msg.player;renderPlayers()} return;}
+    if(msg.type==="chat"){messages.push(msg.message);messages=messages.slice(-90);renderChat();return;}
+    if(msg.type==="leave"){delete players[msg.id];removeAvatar(msg.id);systemMessage(`${msg.name} が退出しました`);renderPlayers();}
   };
-
-  socket.onclose=()=>{setStatus("切断");presenceText.textContent="未接続"};
-  socket.onerror=()=>setStatus("エラー");
+  socket.onclose=()=>{setStatus("切断");presenceText.textContent="未接続";debug("ws","close");};
+  socket.onerror=(e)=>{setStatus("エラー");debug("ws","error",String(e));};
 }
-
 function broadcastPresence(force=false){
   const now=Date.now();
   if(!force&&now-lastPresence<80)return;
@@ -311,12 +227,7 @@ function broadcastPresence(force=false){
   players[selfId]={id:selfId,name,x:self.x,z:self.z,walk:self.walk,facing:self.facing,palette:self.palette,colorCss:self.colorCss,lastSeen:now};
   send({type:"presence",player:players[selfId]});
 }
-function sendChat(){
-  const text=chatInput.value.trim();
-  if(!text)return;
-  send({type:"chat",message:{id:uid(),room,playerId:selfId,playerName:name,text}});
-  chatInput.value="";
-}
+function sendChat(){const text=chatInput.value.trim();if(!text)return;send({type:"chat",message:{id:uid(),room,playerId:selfId,playerName:name,text}});chatInput.value="";}
 
 const selfPalette=COLORS[randPlayer(COLORS.length)];
 const self={x:-28+randPlayer(8),z:14+randPlayer(8),walk:0,facing:0,palette:selfPalette,colorCss:colorHexToCss(selfPalette.body)};
@@ -346,6 +257,7 @@ window.addEventListener("resize",()=>{
 
 setRoomUrl();
 connect();
+debug("ui","ready");
 
 const forward=new THREE.Vector3(), right=new THREE.Vector3(), move=new THREE.Vector3();
 const clock=new THREE.Clock();

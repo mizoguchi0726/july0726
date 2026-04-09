@@ -1,4 +1,4 @@
-# Velvet Night District 3D v6 fixed
+# Velvet Night District 3D v7 fixed
 
 npm install
 npm start
@@ -11,8 +11,7 @@ Render:
 - Three.js 3D版
 - WASD移動
 - マウス視点変更（Pointer Lock）
-- 視点ロック用オーバーレイ表示つき
-- Shiftダッシュ
-- 夜の街ワールド
-- 画面横オーバーレイチャット
+- クリックスタートオーバーレイ
+- 右側チャット
 - マルチプレイ対応
+- 左上デバッグ表示つき
