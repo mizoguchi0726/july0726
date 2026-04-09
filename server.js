@@ -2,7 +2,6 @@ const express = require("express");
 const http = require("http");
 const WebSocket = require("ws");
 const path = require("path");
-
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
@@ -12,23 +11,19 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (_req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 
 const rooms = new Map();
-function getRoom(roomId) {
-  if (!rooms.has(roomId)) rooms.set(roomId, { players: new Map(), sockets: new Set(), messages: [] });
-  return rooms.get(roomId);
-}
-function send(ws, data) { if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(data)); }
-function broadcast(roomId, data, exceptWs = null) {
+const getRoom = (id) => {
+  if (!rooms.has(id)) rooms.set(id, { players: new Map(), sockets: new Set(), messages: [] });
+  return rooms.get(id);
+};
+const send = (ws, data) => ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify(data));
+const broadcast = (roomId, data, except = null) => {
   const room = rooms.get(roomId); if (!room) return;
-  for (const sock of room.sockets) if (sock !== exceptWs) send(sock, data);
-}
-function broadcastAll(roomId, data) {
+  for (const sock of room.sockets) if (sock !== except) send(sock, data);
+};
+const broadcastAll = (roomId, data) => {
   const room = rooms.get(roomId); if (!room) return;
   for (const sock of room.sockets) send(sock, data);
-}
-function cleanupRoom(roomId) {
-  const room = rooms.get(roomId);
-  if (room && room.sockets.size === 0) rooms.delete(roomId);
-}
+};
 
 wss.on("connection", (ws) => {
   ws.playerId = null; ws.roomId = null;
@@ -41,11 +36,9 @@ wss.on("connection", (ws) => {
       const roomId = String(msg.roomId || "velvet-district-3d");
       const player = msg.player || {};
       ws.playerId = player.id; ws.roomId = roomId;
-
       const room = getRoom(roomId);
       room.sockets.add(ws);
       room.players.set(player.id, { ...player, lastSeen: Date.now() });
-
       send(ws, {
         type: "snapshot",
         roomId,
@@ -53,7 +46,6 @@ wss.on("connection", (ws) => {
         players: Array.from(room.players.values()),
         messages: room.messages.slice(-40),
       });
-
       broadcast(roomId, { type: "player_joined", player: { ...player, lastSeen: Date.now() } }, ws);
       return;
     }
@@ -87,10 +79,10 @@ wss.on("connection", (ws) => {
     const room = rooms.get(ws.roomId);
     if (!room) return;
     room.sockets.delete(ws);
-    const leavingPlayer = room.players.get(ws.playerId);
+    const leaving = room.players.get(ws.playerId);
     room.players.delete(ws.playerId);
-    if (leavingPlayer) broadcast(ws.roomId, { type: "leave", id: ws.playerId, name: leavingPlayer.name });
-    cleanupRoom(ws.roomId);
+    if (leaving) broadcast(ws.roomId, { type: "leave", id: ws.playerId, name: leaving.name });
+    if (room.sockets.size === 0) rooms.delete(ws.roomId);
   });
 });
 
@@ -103,7 +95,7 @@ setInterval(() => {
         broadcast(roomId, { type: "leave", id: playerId, name: player.name });
       }
     }
-    cleanupRoom(roomId);
+    if (room.sockets.size === 0) rooms.delete(roomId);
   }
 }, 3000);
 
