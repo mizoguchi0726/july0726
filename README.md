@@ -1,4 +1,4 @@
-# Velvet Night District 3D v8 importmap fix
+# Velvet Night District 3D - V9 COMPLETE
 
 npm install
 npm start
@@ -7,7 +7,7 @@ Render:
 - Build Command: npm install
 - Start Command: npm start
 
-修正:
-- import map を追加
-- PointerLockControls の依存解決を修正
-- 左上デバッグ表示つき
+確認用:
+- タイトルに V9 COMPLETE と表示される
+- 左上に debug 表示が出る
+- 中央の「クリックしてスタート」から視点ロックできる

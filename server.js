@@ -16,13 +16,17 @@ function getRoom(id) {
   if (!rooms.has(id)) rooms.set(id, { players: new Map(), sockets: new Set(), messages: [] });
   return rooms.get(id);
 }
-function send(ws, data) { if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(data)); }
+function send(ws, data) {
+  if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(data));
+}
 function broadcast(roomId, data, except = null) {
-  const room = rooms.get(roomId); if (!room) return;
+  const room = rooms.get(roomId);
+  if (!room) return;
   for (const sock of room.sockets) if (sock !== except) send(sock, data);
 }
 function broadcastAll(roomId, data) {
-  const room = rooms.get(roomId); if (!room) return;
+  const room = rooms.get(roomId);
+  if (!room) return;
   for (const sock of room.sockets) send(sock, data);
 }
 
@@ -107,4 +111,6 @@ setInterval(() => {
   }
 }, 3000);
 
-server.listen(PORT, () => console.log(`MMO server running on http://localhost:${PORT}`));
+server.listen(PORT, () => {
+  console.log(`MMO server running on http://localhost:${PORT}`);
+});
