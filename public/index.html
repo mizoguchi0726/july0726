@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Velvet Night District 3D - V11 ANIME FIX</title>
+<title>Velvet Night District 3D - V12 DRAG CAMERA</title>
 <style>
 :root{
   --panel:rgba(10,10,18,.72);
@@ -22,7 +22,7 @@ radial-gradient(circle at 80% 0%, rgba(255,107,176,.14), transparent 24%),
 linear-gradient(180deg,#090812 0%,#05050a 100%);color:var(--text);font-family:Inter,system-ui,sans-serif}
 #app{position:relative;width:100%;height:100%}
 #scene{position:absolute;inset:0}
-.brand,.statusCard,.chatPanel,.playersPanel,.controls,.legend,.prompt,.debug{
+.brand,.statusCard,.chatPanel,.playersPanel,.controls,.legend,.debug{
   backdrop-filter:blur(14px);
   background:var(--panel);
   border:1px solid var(--line);
@@ -58,7 +58,7 @@ linear-gradient(180deg,#090812 0%,#05050a 100%);color:var(--text);font-family:In
 .dot{width:12px;height:12px;border-radius:999px;display:inline-block}
 .bottomBar{position:absolute;left:18px;bottom:18px;z-index:5;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
 .controls,.legend{border-radius:24px;padding:14px;min-width:320px}
-.controls h3,.legend h3,.prompt h2{margin:0 0 12px;font-size:17px}
+.controls h3,.legend h3{margin:0 0 12px;font-size:17px}
 .controls .row{display:flex;gap:8px;margin-bottom:10px}
 .hint{color:var(--muted);font-size:12px;line-height:1.6;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:10px 12px}
 .legendGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -68,7 +68,6 @@ linear-gradient(180deg,#090812 0%,#05050a 100%);color:var(--text);font-family:In
 .prompt h2{font-size:30px;margin-bottom:10px}
 .prompt p{margin:0;color:var(--muted);line-height:1.7}
 .debug{position:absolute;left:18px;top:150px;z-index:30;color:#9df3ff;padding:8px 10px;border-radius:12px;font-size:12px;max-width:520px;white-space:pre-wrap}
-.hidden{display:none!important}
 @media (max-width:1100px){
   .rightDock{width:min(360px,calc(100vw - 36px));top:auto;bottom:18px;height:60vh}
   .bottomBar{display:none}
@@ -90,8 +89,8 @@ linear-gradient(180deg,#090812 0%,#05050a 100%);color:var(--text);font-family:In
   <div class="hud">
     <div class="brand">
       <small>Playable 3D heroine prototype</small>
-      <h1>Velvet Night District 3D - V11 ANIME FIX</h1>
-      <p>クリックで視点を有効化し、<b>WASD + マウス</b>で遊べる版です。マウスホイールでカメラ距離も変更できます。</p>
+      <h1>Velvet Night District 3D - V12 DRAG CAMERA</h1>
+      <p>右ドラッグで視点変更、ホイールでズーム、WASDで移動できる版です。チャットや名前入力と干渉しにくい操作方式に変更しました。</p>
     </div>
     <div class="statusCard">
       <div class="pill" id="playersBadge">0 人</div>
@@ -122,28 +121,18 @@ linear-gradient(180deg,#090812 0%,#05050a 100%);color:var(--text);font-family:In
     </section>
     <section class="legend">
       <h3>この版のポイント</h3>
-      <div class="legendGrid"><div>🌃 3Dの夜街</div><div>💃 女の子体型の3Dキャラ</div><div>🖱️ マウス視点変更</div><div>🎡 ホイールズーム</div></div>
+      <div class="legendGrid"><div>🌃 3Dの夜街</div><div>💃 女の子体型の3Dキャラ</div><div>🖱️ 右ドラッグ視点</div><div>🎡 ホイールズーム</div></div>
     </section>
   </div>
-
-  <div class="center" id="overlayCenter">
-    <div class="prompt">
-      <h2>クリックしてスタート</h2>
-      <p>マウスで視点を回せます。WASDで移動、ホイールでズーム、Shiftでダッシュ、Escで視点解除 / Tでチャット。</p>
-      <button class="btn" id="startBtn">視点を有効にする</button>
-    </div>
-  </div>
-
   <div class="debug" id="debugBox">loading...</div>
 </div>
 
 <script type="module">
 import * as THREE from "three";
-import { PointerLockControls } from "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/controls/PointerLockControls.js";
 
 const debugBox=document.getElementById("debugBox");
 const debug=(...a)=>{debugBox.textContent=a.join(" | "); console.log(...a);};
-debug("imports ok", "v11");
+debug("imports ok", "v12");
 
 const WORLD_W=140, WORLD_H=100;
 const COLORS=[{body:0xff72b1,accent:0xffd0e1},{body:0x8f6bff,accent:0xd9c9ff},{body:0x67b7ff,accent:0xcde7ff},{body:0xffb84d,accent:0xffe4b3},{body:0x4fe0b8,accent:0xc2fff0},{body:0xff6e7f,accent:0xffc2cb}];
@@ -154,7 +143,7 @@ const playerRandom=createSeededRandom((Date.now()%1000000)+Math.floor(Math.rando
 const randPlayer=n=>Math.floor(playerRandom()*n);
 const $=(id)=>document.getElementById(id);
 
-const chatLog=$("chatLog"), chatInput=$("chatInput"), sendBtn=$("sendBtn"), nameInput=$("nameInput"), roomInput=$("roomInput"), applyNameBtn=$("applyName"), reconnectBtn=$("reconnectBtn"), resetBtn=$("resetBtn"), playerList=$("playerList"), presenceText=$("presenceText"), playersBadge=$("playersBadge"), roomBadge=$("roomBadge"), statusBadge=$("statusBadge"), overlayCenter=$("overlayCenter"), startBtn=$("startBtn");
+const chatLog=$("chatLog"), chatInput=$("chatInput"), sendBtn=$("sendBtn"), nameInput=$("nameInput"), roomInput=$("roomInput"), applyNameBtn=$("applyName"), reconnectBtn=$("reconnectBtn"), resetBtn=$("resetBtn"), playerList=$("playerList"), presenceText=$("presenceText"), playersBadge=$("playersBadge"), roomBadge=$("roomBadge"), statusBadge=$("statusBadge");
 
 let params=new URLSearchParams(location.search), room=params.get("room")||"velvet-district-3d";
 let name=sessionStorage.getItem("mmo_name")||`Player-${100+randPlayer(900)}`;
@@ -177,12 +166,36 @@ const scene=new THREE.Scene();
 scene.fog=new THREE.FogExp2(0x09070f,.018);
 
 const camera=new THREE.PerspectiveCamera(55,window.innerWidth/window.innerHeight,.1,500);
-const controls=new PointerLockControls(camera, document.body);
-scene.add(controls.getObject());
+const cameraPivot = new THREE.Object3D();
+scene.add(cameraPivot);
+cameraPivot.add(camera);
 
-controls.addEventListener("lock", ()=>{overlayCenter.classList.add("hidden"); debug("pointer locked");});
-controls.addEventListener("unlock", ()=>{overlayCenter.classList.remove("hidden"); debug("pointer unlocked");});
-startBtn.addEventListener("click", ()=>{debug("start clicked"); controls.lock();});
+let cameraYaw = 0;
+let cameraPitch = -0.28;
+let isDragging = false;
+let lastMouseX = 0;
+let lastMouseY = 0;
+
+const canvasEl = $("scene");
+canvasEl.addEventListener("contextmenu", (e)=>e.preventDefault());
+canvasEl.addEventListener("mousedown", (e)=>{
+  if(e.button===2){
+    isDragging = true;
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+    debug("drag", "start");
+  }
+});
+window.addEventListener("mouseup", ()=>{ if(isDragging){ isDragging=false; debug("drag","end"); }});
+window.addEventListener("mousemove", (e)=>{
+  if(!isDragging) return;
+  const dx = e.clientX - lastMouseX;
+  const dy = e.clientY - lastMouseY;
+  lastMouseX = e.clientX;
+  lastMouseY = e.clientY;
+  cameraYaw -= dx * 0.004;
+  cameraPitch = clamp(cameraPitch - dy * 0.003, -0.95, 0.2);
+});
 window.addEventListener("wheel", (e) => {
   cameraDistance = clamp(cameraDistance + (e.deltaY > 0 ? 0.8 : -0.8), cameraDistanceMin, cameraDistanceMax);
   debug("zoom", cameraDistance.toFixed(1));
@@ -457,11 +470,9 @@ applyNameBtn.onclick=()=>{const v=nameInput.value.trim().slice(0,18);if(v){name=
 reconnectBtn.onclick=()=>{room=roomInput.value.trim().replace(/\s+/g,"-").slice(0,20)||"velvet-district-3d";setRoomUrl();connect();};
 resetBtn.onclick=()=>{self.x=-28+randPlayer(8);self.z=14+randPlayer(8);broadcastPresence(true);};
 sendBtn.onclick=sendChat;
-function unlockForUI(){ if(controls.isLocked) controls.unlock(); }
-[nameInput, roomInput, chatInput, applyNameBtn, reconnectBtn, resetBtn, sendBtn].forEach(el=>{
-  el.addEventListener("mousedown", unlockForUI);
-  el.addEventListener("focus", unlockForUI);
-});
+function focusChatUI(){
+  chatInput.focus();
+}
 chatInput.addEventListener("keydown",e=>{
   if(e.key==="Enter"){
     e.preventDefault();
@@ -474,8 +485,7 @@ window.addEventListener("keydown",e=>{
   const key=e.key.toLowerCase();
   if((key==="t" || key==="enter") && !typing){
     e.preventDefault();
-    unlockForUI();
-    chatInput.focus();
+    focusChatUI();
     return;
   }
   if(["arrowup","arrowdown","arrowleft","arrowright"," "].includes(key)&&!typing)e.preventDefault();
@@ -489,7 +499,7 @@ window.addEventListener("resize",()=>{renderer.setSize(window.innerWidth,window.
 
 setRoomUrl();
 connect();
-debug("ui ready");
+debug("ui ready", "drag camera");
 
 const forward=new THREE.Vector3(), right=new THREE.Vector3(), move=new THREE.Vector3();
 const clock=new THREE.Clock();
@@ -498,7 +508,7 @@ function tick(){
   requestAnimationFrame(tick);
   const delta=Math.min(clock.getDelta(),.033);
 
-  if(controls.isLocked){
+  if(true){
     camera.getWorldDirection(forward);
     forward.y=0;
     forward.normalize();
@@ -528,7 +538,7 @@ function tick(){
 
   const selfAvatar=avatars.get(selfId);
   if(selfAvatar){
-    const obj=controls.getObject();
+    const obj=cameraPivot;
     const target = new THREE.Vector3(selfAvatar.position.x, 2.6, selfAvatar.position.z);
     const forwardDir = new THREE.Vector3();
     camera.getWorldDirection(forwardDir);
@@ -540,8 +550,8 @@ function tick(){
     }
     const desired = target.clone().add(forwardDir.clone().multiplyScalar(-cameraDistance));
     desired.y = target.y + cameraHeight;
-    obj.position.lerp(desired, controls.isLocked ? 0.22 : 0.10);
-    if(!controls.isLocked){
+    obj.position.lerp(desired, isDragging ? 0.22 : 0.10);
+    if(!isDragging){
       camera.lookAt(target);
     }
   }

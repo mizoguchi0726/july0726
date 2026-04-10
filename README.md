@@ -1,4 +1,4 @@
-# Velvet Night District 3D - V11 ANIME FIX
+# Velvet Night District 3D - V12 DRAG CAMERA
 
 npm install
 npm start
@@ -8,9 +8,9 @@ Render:
 - Start Command: npm start
 
 変更点:
-- 名前を sessionStorage 管理に変更（同一ブラウザ別タブでも被りにくい）
-- 名前変更を安定化
-- チャット入力時は視点ロック解除
-- Tキー / Enter でチャット入力へ移動
-- キャラをアニメ調のかわいい寄りに調整
-- タイトルに V11 ANIME FIX と表示される
+- Pointer Lock を廃止
+- 右ドラッグで視点変更
+- ホイールでズーム
+- 名前変更/チャット入力と干渉しにくい操作方式
+- Tキーでチャット入力へ移動
+- タイトルに V12 DRAG CAMERA と表示される
